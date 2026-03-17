@@ -632,7 +632,7 @@ LIGA_DISPLAY = {
     "Venezuela"    : "Liga FUTVE (Venezuela)",
     "Russia"       : "Premier Liga (Russia)",
     "Denmark"      : "Superliga (Denmark)",
-    "Ukraine"      : "Premier Liga (Ukraine)", [watchlist]",
+    "Ukraine"      : "Premier Liga (Ukraine)",
 }
 
 # ── Input form ────────────────────────────────────────
