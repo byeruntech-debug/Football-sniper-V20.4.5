@@ -516,7 +516,7 @@ def predict_full(home, away, liga, odds=None):
     gk_score = GK.get(home, 0)
     f3_pass  = not (gap >= 100 and gk_score >= 2.0)
     filters.append(("Giant killer", f3_pass,
-                    f"GK score {gk_score} | gap {gap:+d}"))
+                    f"GK score {gk_score} | gap {int(gap):+d}"))
     if not f3_pass: tier = "HOLD"
 
     # 4. Lambda
