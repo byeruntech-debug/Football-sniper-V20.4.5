@@ -1136,6 +1136,18 @@ def run_bot():
                     cmd_prediksi(chat_id, v20, TELEGRAM_TOKEN, text[9:].strip())
                 elif text.startswith("/picks"):
                     cmd_picks(chat_id, v20, TELEGRAM_TOKEN)
+                elif text.startswith("/form"):
+                    cmd_form(chat_id, v20, TELEGRAM_TOKEN, args)
+                elif text.startswith("/h2h"):
+                    cmd_h2h(chat_id, v20, TELEGRAM_TOKEN, args)
+                elif text.startswith("/history"):
+                    cmd_history(chat_id, TELEGRAM_TOKEN)
+                elif text.startswith("/akurasi"):
+                    cmd_akurasi(chat_id, TELEGRAM_TOKEN)
+                elif text.startswith("/hasil"):
+                    cmd_hasil(chat_id, TELEGRAM_TOKEN, args)
+                elif text.startswith("/notif"):
+                    cmd_notif_set(chat_id, TELEGRAM_TOKEN, args, _notif_store)
                 else:
                     send(chat_id,
                         "❓ Perintah tidak dikenal\n\n"
