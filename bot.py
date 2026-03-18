@@ -365,13 +365,13 @@ def cmd_picks(chat_id, v20, token):
         name  = LIGA_NAME.get(liga,liga)
         lines = [f"{emoji} <b>{name}</b>\n{'─'*22}"]
         for idx,(h,a,r) in enumerate(picks[:2],1):
-            match_day = week_start+timedelta(days=min(idx,6))
+            match_day = find_fixture_date(liga, h, a)
             top_sc    = " | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
             gap       = r["elo_h"]-r["elo_a"]
             lines.append(
                 f"\n🔢 Match #{idx}\n"
                 f"🏠 <b>{h}</b>\n✈️ <b>{a}</b>\n"
-                f"📅 Est. {match_day.strftime('%A, %d %b')}\n\n"
+                f"📅 {match_day}\n\n"
                 f"{PRED_ICON[r['pred']]} <b>{PRED_LABEL[r['pred']]}</b> — {r['conf']*100:.1f}%\n"
                 f"  Kandang {r['ph']*100:.1f}% | Seri {r['pd']*100:.1f}% | Tandang {r['pa']*100:.1f}%\n"
                 f"⚽ {r['lh']}–{r['la']} | 🎯 {top_sc}\n"
