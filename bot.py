@@ -525,7 +525,7 @@ PRED_LABEL = {"home_win":"MENANG KANDANG","draw":"SERI","away_win":"MENANG TANDA
 PRED_ICON  = {"home_win":"🏠","draw":"🤝","away_win":"✈️"}
 
 def load_model():
-    for p in [MODEL_PATH, "model_v20_complete.json"]:
+    for p in [MODEL_PATH, "data/model_v20_complete.json"]:
         if os.path.exists(p):
             with open(p) as f: return json.load(f)
     return None
@@ -542,6 +542,28 @@ def load_j2_fixtures():
         return cache.get("J2_League", [])
     except:
         return []
+
+
+def _load_notif_store():
+    """Load notif store dari file — survive Railway restart"""
+    path = "data/notif_store.json"
+    try:
+        if os.path.exists(path):
+            with open(path) as f:
+                return json.load(f)
+    except:
+        pass
+    return {}
+
+def _save_notif_store(store):
+    """Simpan notif store ke file"""
+    path = "data/notif_store.json"
+    try:
+        os.makedirs("data", exist_ok=True)
+        with open(path, "w") as f:
+            json.dump(store, f)
+    except:
+        pass
 
 def send(chat_id, msg, token=None):
     tk = token or TELEGRAM_TOKEN
@@ -1353,7 +1375,7 @@ def run_bot():
     v20 = load_model()
     if not v20:
         print("❌ Model tidak ditemukan"); return
-    _notif_store = {}  # chat_id -> jam WIB
+    _notif_store = _load_notif_store()  # persistent  # chat_id -> jam WIB
     _last_notif_date = {}  # track tanggal terakhir kirim
     print(f"✅ Bot aktif | {len(v20.get('active_leagues',[]))} liga")
     print("Kirim /start ke bot untuk mulai\nCtrl+C untuk stop\n")
