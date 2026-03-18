@@ -774,7 +774,7 @@ def cmd_prediksi(chat_id, v20, token, args):
 
 def cmd_picks(chat_id, v20, token):
     import datetime as _dt
-    now_dt    = _dt.datetime.utcnow() + _dt.timedelta(hours=7)
+    now_dt    = _dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None) + _dt.timedelta(hours=7)
     today     = now_dt.date()
     date_from = today.strftime("%Y%m%d")
     date_to   = (today + _dt.timedelta(days=30)).strftime("%Y%m%d")
@@ -1296,17 +1296,17 @@ def run_bot():
                 elif text.startswith("/picks"):
                     cmd_picks(chat_id, v20, TELEGRAM_TOKEN)
                 elif text.startswith("/form"):
-                    cmd_form(chat_id, v20, TELEGRAM_TOKEN, args)
+                    cmd_form(chat_id, v20, TELEGRAM_TOKEN, text[5:].strip())
                 elif text.startswith("/h2h"):
-                    cmd_h2h(chat_id, v20, TELEGRAM_TOKEN, args)
+                    cmd_h2h(chat_id, v20, TELEGRAM_TOKEN, text[4:].strip())
                 elif text.startswith("/history"):
                     cmd_history(chat_id, TELEGRAM_TOKEN)
                 elif text.startswith("/akurasi"):
                     cmd_akurasi(chat_id, TELEGRAM_TOKEN)
                 elif text.startswith("/hasil"):
-                    cmd_hasil(chat_id, TELEGRAM_TOKEN, args)
+                    cmd_hasil(chat_id, TELEGRAM_TOKEN, text[6:].strip())
                 elif text.startswith("/notif"):
-                    cmd_notif_set(chat_id, TELEGRAM_TOKEN, args, _notif_store)
+                    cmd_notif_set(chat_id, TELEGRAM_TOKEN, text[6:].strip(), _notif_store)
                 else:
                     send(chat_id,
                         "❓ Perintah tidak dikenal\n\n"
