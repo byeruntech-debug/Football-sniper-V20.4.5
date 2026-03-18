@@ -1,5 +1,0 @@
-[phases.install]
-cmds = ["pip install scipy numpy requests"]
-
-[start]
-cmd = "python src/weekly_picks.py"
