@@ -348,7 +348,7 @@ def run_bot():
                 else:
                     send(chat_id,
                         "❓ Perintah tidak dikenal\n\n"
-                        "Ketik /help untuk daftar perintah", TELEGRAM_TOKEN
+                        "Ketik /help untuk daftar perintah", _get_token()
                     )
         except KeyboardInterrupt:
             print("\n⏹ Bot dihentikan")
