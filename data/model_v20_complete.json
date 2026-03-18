@@ -1761,7 +1761,11 @@
         "Zenit": 1.2464301667977573,
         "Z\u00fcrich": 1.4082731879774462,
         "\u0130stanbul Ba\u015fak\u015fehir": 0.9607810844978726,
-        "\u017dilina": 1.4082731879774462
+        "\u017dilina": 1.4082731879774462,
+        "Sociedad": 1.4060547175319749,
+        "Dinamo Zagreb": 1.2,
+        "Red Star Belgrade": 1.2,
+        "RB Salzburg": 1.2
       },
       "defense": {
         "AEK Athens": 0.9692915963477206,
@@ -1921,7 +1925,11 @@
         "Zenit": 0.8715714581406244,
         "Z\u00fcrich": 0.85,
         "\u0130stanbul Ba\u015fak\u015fehir": 0.9999956521833648,
-        "\u017dilina": 0.85
+        "\u017dilina": 0.85,
+        "Sociedad": 1.0200261615411348,
+        "Dinamo Zagreb": 0.9,
+        "Red Star Belgrade": 0.9,
+        "RB Salzburg": 0.9
       },
       "hfa": 1.3800871649235125,
       "rho": -0.07466240259399046
@@ -2742,7 +2750,11 @@
       "Zenit": 1443.0777057074743,
       "Z\u00fcrich": 1501.7189070628647,
       "\u0130stanbul Ba\u015fak\u015fehir": 1501.7189070628647,
-      "\u017dilina": 1501.7189070628647
+      "\u017dilina": 1501.7189070628647,
+      "Sociedad": 1522.428383477144,
+      "Dinamo Zagreb": 1480.0,
+      "Red Star Belgrade": 1480.0,
+      "RB Salzburg": 1480.0
     }
   },
   "h2h_stats": {
