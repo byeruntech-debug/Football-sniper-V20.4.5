@@ -1,63 +1,51 @@
 #!/usr/bin/env python3
+"""Football Sniper Bot V20.4.5 — Interactive Telegram Bot"""
 import json, math, os, requests, time
 import numpy as np
 from scipy.stats import poisson
 from datetime import datetime, timedelta
 
-def _get_token():
-    return os.environ.get("TELEGRAM_TOKEN", "")
-
-def _get_chat():
-    return os.environ.get("TELEGRAM_CHAT", "")
-
-MODEL_PATH = "data/model_v20_complete.json"
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN","")
+TELEGRAM_CHAT  = os.environ.get("TELEGRAM_CHAT","")
+MODEL_PATH     = "data/model_v20_complete.json"
 
 LIGA_EMOJI = {
-    "EPL":"\U0001f3f4","Bundesliga":"\U0001f1e9\U0001f1ea","Serie_A":"\U0001f1ee\U0001f1f9",
-    "La_Liga":"\U0001f1ea\U0001f1f8","Ligue_1":"\U0001f1eb\U0001f1f7","Eredivisie":"\U0001f1f3\U0001f1f1",
-    "Liga_Portugal":"\U0001f1f5\U0001f1f9","Super_Lig":"\U0001f1f9\U0001f1f7",
-    "Belgium":"\U0001f1e7\U0001f1ea","Scotland":"\U0001f3f4","Greece":"\U0001f1ec\U0001f1f7",
-    "J1_League":"\U0001f1ef\U0001f1f5","Brazil":"\U0001f1e7\U0001f1f7",
-    "Venezuela":"\U0001f1fb\U0001f1ea","Russia":"\U0001f1f7\U0001f1fa",
-    "Denmark":"\U0001f1e9\U0001f1f0","Ukraine":"\U0001f1fa\U0001f1e6",
+    "EPL":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Bundesliga":"🇩🇪","Serie_A":"🇮🇹","La_Liga":"🇪🇸",
+    "Ligue_1":"🇫🇷","Eredivisie":"🇳🇱","Liga_Portugal":"🇵🇹","Super_Lig":"🇹🇷",
+    "Belgium":"🇧🇪","Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Greece":"🇬🇷","J1_League":"🇯🇵",
+    "Brazil":"🇧🇷","Venezuela":"🇻🇪","Russia":"🇷🇺","Denmark":"🇩🇰","Ukraine":"🇺🇦",
 }
 LIGA_NAME = {
     "EPL":"Premier League","Bundesliga":"Bundesliga","Serie_A":"Serie A",
     "La_Liga":"La Liga","Ligue_1":"Ligue 1","Eredivisie":"Eredivisie",
-    "Liga_Portugal":"Primeira Liga","Super_Lig":"Super Lig","Belgium":"Pro League",
+    "Liga_Portugal":"Primeira Liga","Super_Lig":"Süper Lig","Belgium":"Pro League",
     "Scotland":"Premiership","Greece":"Super League","J1_League":"J1 League",
-    "Brazil":"Serie A Brasil","Venezuela":"Liga FUTVE","Russia":"Premier Liga RU",
-    "Denmark":"Superliga","Ukraine":"Premier Liga UA",
+    "Brazil":"Série A","Venezuela":"Liga FUTVE","Russia":"Premier Liga",
+    "Denmark":"Superliga","Ukraine":"Premier Liga",
 }
 PRED_LABEL = {"home_win":"MENANG KANDANG","draw":"SERI","away_win":"MENANG TANDANG"}
-PRED_ICON  = {"home_win":"\U0001f3e0","draw":"\U0001f91d","away_win":"\u2708\ufe0f"}
+PRED_ICON  = {"home_win":"🏠","draw":"🤝","away_win":"✈️"}
 
 def load_model():
-    for p in ["data/model_v20_complete.json","model_v20_complete.json"]:
+    for p in [MODEL_PATH, "model_v20_complete.json"]:
         if os.path.exists(p):
-            with open(p) as f:
-                return json.load(f)
+            with open(p) as f: return json.load(f)
     return None
 
 def send(chat_id, msg, token=None):
-    tk = token or _get_token()
+    tk = token or TELEGRAM_TOKEN
     for chunk in [msg[i:i+4000] for i in range(0,len(msg),4000)]:
-        try:
-            requests.post(
-                f"https://api.telegram.org/bot{tk}/sendMessage",
-                json={"chat_id":chat_id,"text":chunk,"parse_mode":"HTML"},
-                timeout=10
-            )
-        except Exception as e:
-            print(f"Send error: {e}")
+        requests.post(
+            f"https://api.telegram.org/bot{tk}/sendMessage",
+            json={"chat_id":chat_id,"text":chunk,"parse_mode":"HTML"}
+        )
 
 def predict_match(v20, home, away, liga):
     DC = v20["dc_params"].get(liga,{})
     if not DC or home not in DC.get("attack",{}) or away not in DC.get("attack",{}):
         return None
     atk,dfn,hfa,rho = DC["attack"],DC["defense"],DC["hfa"],DC["rho"]
-    lh=math.exp(atk[home]+dfn[away]+hfa)
-    la=math.exp(atk[away]+dfn[home])
+    lh=math.exp(atk[home]+dfn[away]+hfa); la=math.exp(atk[away]+dfn[home])
     M=np.zeros((9,9))
     for gh in range(9):
         for ga in range(9):
@@ -68,12 +56,10 @@ def predict_match(v20, home, away, liga):
             else: tau=1.0
             M[gh,ga]=tau*poisson.pmf(gh,lh)*poisson.pmf(ga,la)
     M/=M.sum()
-    hw=float(np.sum(np.tril(M,-1)))
-    dr=float(np.sum(np.diag(M)))
-    aw=float(np.sum(np.triu(M,1)))
+    hw=float(np.sum(np.tril(M,-1))); dr=float(np.sum(np.diag(M))); aw=float(np.sum(np.triu(M,1)))
     ELO=v20["elo"].get(liga,{})
-    rh_=ELO.get(home,1500)+50; ra_=ELO.get(away,1500)
-    eh=1/(1+10**((ra_-rh_)/400)); ea=1-eh
+    rh_=int(ELO.get(home,1500)); ra_=int(ELO.get(away,1500))
+    eh=1/(1+10**((ra_-rh_+50)/400)); ea=1-eh
     edr=max(0.18,0.35-abs(eh-ea)*0.5)
     BOOST=v20["draw_boost"].get(liga,1.431)
     ph=0.55*hw+0.45*eh*(1-edr)
@@ -86,177 +72,207 @@ def predict_match(v20, home, away, liga):
     flat=np.argsort(M.ravel())[::-1][:3]
     top=[(int(i//9),int(i%9),float(M.ravel()[i])) for i in flat]
     return {
-        "pred":pred,"conf":round(conf,4),
-        "tier":"SNIPER" if conf>=thr else "HOLD",
+        "pred":pred,"conf":round(conf,4),"tier":"SNIPER" if conf>=thr else "HOLD",
         "ph":round(ph,3),"pd":round(pd,3),"pa":round(pa,3),
         "thr":thr,"lh":round(lh,2),"la":round(la,2),
-        "top_scores":top,
-        "elo_h":int(ELO.get(home,1500)),
-        "elo_a":int(ELO.get(away,1500)),
+        "top_scores":top,"elo_h":rh_,"elo_a":ra_,
     }
 
-def cmd_start(chat_id, v20):
-    n=len(v20.get("active_leagues",[]))
-    t=sum(len(v20["dc_params"].get(l,{}).get("attack",{})) for l in v20.get("active_leagues",[]))
+def cmd_start(chat_id, v20, token):
+    n_liga = len(v20.get("active_leagues",[]))
+    n_teams= sum(len(v20["dc_params"].get(l,{}).get("attack",{})) for l in v20.get("active_leagues",[]))
     send(chat_id,
-        f"\U0001f3af <b>FOOTBALL SNIPER V20.4.5</b>\n"
-        f"\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
-        f"\U0001f916 Model: Dixon-Coles V3 + Elo\n"
-        f"\U0001f3c6 Liga aktif : <b>{n} liga</b>\n"
-        f"\U0001f465 Total tim : <b>{t} tim</b>\n"
-        f"\U0001f4ca Akurasi WF: <b>81.4%</b>\n"
-        f"\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
-        f"\U0001f4cb <b>PERINTAH:</b>\n"
-        f"/picks - SNIPER picks pekan ini\n"
-        f"/liga  - Daftar liga aktif\n"
-        f"/tim EPL - Daftar tim per liga\n"
-        f"/top EPL - Top 5 tim terkuat\n"
-        f"/prediksi Arsenal vs Chelsea EPL\n"
-        f"/help  - Menu ini\n"
-        f"\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
-        f"<i>Shadow mode — bukan saran finansial</i>"
+        f"🎯 <b>Football Sniper V20.4.5</b>\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"Dixon-Coles V3 + Elo Walk-Forward\n"
+        f"Akurasi WF: 81.4% | {n_liga} liga | {n_teams} tim\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        f"📋 <b>PERINTAH TERSEDIA:</b>\n\n"
+        f"/picks — SNIPER picks pekan ini\n"
+        f"/liga — Daftar semua liga aktif\n"
+        f"/tim [liga] — Daftar tim di liga\n"
+        f"  contoh: /tim EPL\n"
+        f"/prediksi [tim1] vs [tim2] [liga] — Prediksi 1 match\n"
+        f"  contoh: /prediksi Arsenal vs Chelsea EPL\n"
+        f"/top [liga] — Top 5 tim terkuat di liga\n"
+        f"  contoh: /top Bundesliga\n"
+        f"/help — Tampilkan menu ini", token
     )
 
-def cmd_liga(chat_id, v20):
-    lines=[
-        "\U0001f3c6 <b>LIGA AKTIF</b>",
-        "\u2501"*25
-    ]
+def cmd_liga(chat_id, v20, token):
+    lines = ["🏆 <b>LIGA AKTIF</b>\n━━━━━━━━━━━━━━━━━━━━━━━"]
     for i,liga in enumerate(v20.get("active_leagues",[]),1):
-        emoji=LIGA_EMOJI.get(liga,"\U0001f3c6")
-        name=LIGA_NAME.get(liga,liga)
-        thr=v20["sniper_threshold"].get(liga,"?")
-        n_t=len(v20["dc_params"].get(liga,{}).get("attack",{}))
-        lines.append(f"{i:2d}. {emoji} <b>{name}</b>  [{liga}]")
+        emoji = LIGA_EMOJI.get(liga,"🏆")
+        name  = LIGA_NAME.get(liga,liga)
+        thr   = v20["sniper_threshold"].get(liga,"?")
+        n_t   = len(v20["dc_params"].get(liga,{}).get("attack",{}))
+        lines.append(f"{i:2d}. {emoji} <b>{name}</b>  [<code>{liga}</code>]")
         lines.append(f"    thr={thr} | {n_t} tim")
-    send(chat_id,"\n".join(lines))
+    lines.append(f"\n📌 Gunakan kode liga untuk perintah /tim dan /top")
+    send(chat_id, "\n".join(lines), token)
 
-def cmd_tim(chat_id, v20, args):
+def cmd_tim(chat_id, v20, token, args):
     if not args:
-        send(chat_id,"Format: /tim [liga]\nContoh: /tim EPL"); return
-    match=None
-    for l in v20.get("active_leagues",[]):
-        if args.lower() in l.lower() or l.lower() in args.lower():
-            match=l; break
+        send(chat_id, "⚠️ Format: /tim [kode_liga]\nContoh: /tim EPL\n\nKode liga: EPL, Bundesliga, Serie_A, La_Liga, dll\nKetik /liga untuk daftar lengkap", token)
+        return
+    liga = args.strip()
+    # Fuzzy match
+    aktif = v20.get("active_leagues",[])
+    match = None
+    for l in aktif:
+        if liga.lower() in l.lower() or l.lower() in liga.lower():
+            match = l; break
     if not match:
-        send(chat_id,"Liga tidak ditemukan. Ketik /liga"); return
-    DC=v20["dc_params"].get(match,{})
-    ELO=v20["elo"].get(match,{})
-    teams=sorted(DC.get("attack",{}).keys(),key=lambda t:-ELO.get(t,1500))
-    name=LIGA_NAME.get(match,match)
-    emoji=LIGA_EMOJI.get(match,"\U0001f3c6")
-    lines=[f"{emoji} <b>{name}</b>","\u2501"*25]
+        send(chat_id, f"❌ Liga <code>{liga}</code> tidak ditemukan\nKetik /liga untuk daftar kode liga", token)
+        return
+    DC    = v20["dc_params"].get(match,{})
+    ELO   = v20["elo"].get(match,{})
+    teams = sorted(DC.get("attack",{}).keys(), key=lambda t:-ELO.get(t,1500))
+    emoji = LIGA_EMOJI.get(match,"🏆")
+    name  = LIGA_NAME.get(match,match)
+    lines = [f"{emoji} <b>{name}</b> — Daftar Tim\n━━━━━━━━━━━━━━━━━━━━━━━"]
     for i,t in enumerate(teams,1):
-        elo=int(ELO.get(t,1500))
-        lines.append(f"{i:2d}. {t}  <b>Elo: {elo}</b>")
-    send(chat_id,"\n".join(lines))
+        elo = int(ELO.get(t,1500))
+        atk = round(DC["attack"].get(t,0),3)
+        lines.append(f"{i:2d}. {t}\n    Elo: {elo} | Atk: {atk:+.3f}")
+    lines.append(f"\n📊 Total: {len(teams)} tim | Diurutkan by Elo")
+    send(chat_id, "\n".join(lines), token)
 
-def cmd_top(chat_id, v20, args):
+def cmd_top(chat_id, v20, token, args):
     if not args:
-        send(chat_id,"Format: /top [liga]\nContoh: /top EPL"); return
-    match=None
-    for l in v20.get("active_leagues",[]):
-        if args.lower() in l.lower() or l.lower() in args.lower():
-            match=l; break
+        send(chat_id, "⚠️ Format: /top [liga]\nContoh: /top EPL", token)
+        return
+    liga = args.strip()
+    aktif = v20.get("active_leagues",[])
+    match = None
+    for l in aktif:
+        if liga.lower() in l.lower() or l.lower() in liga.lower():
+            match = l; break
     if not match:
-        send(chat_id,"Liga tidak ditemukan. Ketik /liga"); return
-    DC=v20["dc_params"].get(match,{})
-    ELO=v20["elo"].get(match,{})
-    teams=sorted(DC.get("attack",{}).keys(),key=lambda t:-ELO.get(t,1500))[:5]
-    name=LIGA_NAME.get(match,match)
-    emoji=LIGA_EMOJI.get(match,"\U0001f3c6")
-    medals=["\U0001f947","\U0001f948","\U0001f949","4.","5."]
-    lines=[f"{emoji} <b>Top 5 {name}</b>","\u2501"*25]
-    for med,t in zip(medals,teams):
-        elo=int(ELO.get(t,1500))
-        atk=DC["attack"].get(t,0)
-        lines.append(f"{med} <b>{t}</b>\n   Elo: {elo} | Atk: {atk:+.3f}")
-    send(chat_id,"\n".join(lines))
+        send(chat_id, f"❌ Liga tidak ditemukan. Ketik /liga", token)
+        return
+    DC    = v20["dc_params"].get(match,{})
+    ELO   = v20["elo"].get(match,{})
+    teams = sorted(DC.get("attack",{}).keys(), key=lambda t:-ELO.get(t,1500))[:5]
+    emoji = LIGA_EMOJI.get(match,"🏆")
+    name  = LIGA_NAME.get(match,match)
+    lines = [f"{emoji} <b>Top 5 {name}</b>\n━━━━━━━━━━━━━━━━━━━━━━━"]
+    medals = ["🥇","🥈","🥉","4️⃣","5️⃣"]
+    for i,(t,med) in enumerate(zip(teams,medals),1):
+        elo = int(ELO.get(t,1500))
+        atk = DC["attack"].get(t,0)
+        dfn = DC["defense"].get(t,0)
+        lines.append(
+            f"{med} <b>{t}</b>\n"
+            f"   Elo: {elo} | Atk: {atk:+.3f} | Def: {dfn:+.3f}"
+        )
+    send(chat_id, "\n".join(lines), token)
 
-def cmd_prediksi(chat_id, v20, args):
+def cmd_prediksi(chat_id, v20, token, args):
+    # Format: Arsenal vs Chelsea EPL
     try:
-        if " vs " not in args.lower(): raise ValueError
-        idx_vs=args.lower().index(" vs ")
-        home_raw=args[:idx_vs].strip()
-        rest=args[idx_vs+4:].strip().split()
-        liga_raw=rest[-1]
-        away_raw=" ".join(rest[:-1])
-        match=None
-        for l in v20.get("active_leagues",[]):
+        parts = args.strip()
+        # Cari "vs" sebagai pemisah
+        if " vs " not in parts.lower():
+            raise ValueError("Format salah")
+        # Split: "Arsenal vs Chelsea EPL" -> ["Arsenal", "Chelsea EPL"]
+        idx_vs = parts.lower().index(" vs ")
+        home_raw = parts[:idx_vs].strip()
+        rest     = parts[idx_vs+4:].strip()
+        # Liga adalah kata terakhir
+        rest_parts = rest.split()
+        liga_raw   = rest_parts[-1]
+        away_raw   = " ".join(rest_parts[:-1])
+        # Match liga
+        aktif = v20.get("active_leagues",[])
+        liga  = None
+        for l in aktif:
             if liga_raw.lower() in l.lower() or l.lower() in liga_raw.lower():
-                match=l; break
-        if not match:
-            send(chat_id,"Liga tidak ditemukan. Ketik /liga"); return
-        DC=v20["dc_params"].get(match,{})
-        teams=list(DC.get("attack",{}).keys())
-        def find_team(q):
-            q=q.lower()
+                liga = l; break
+        if not liga:
+            send(chat_id, f"❌ Liga <code>{liga_raw}</code> tidak ditemukan\nKetik /liga", token)
+            return
+        # Match tim
+        DC    = v20["dc_params"].get(liga,{})
+        teams = list(DC.get("attack",{}).keys())
+        def find_team(query):
+            q = query.lower()
+            # Exact
             for t in teams:
                 if t.lower()==q: return t
-            matches=[t for t in teams if q in t.lower()]
-            if matches: return min(matches,key=len)
+            # Partial
+            matches = [t for t in teams if q in t.lower()]
+            if len(matches)==1: return matches[0]
+            if len(matches)>1:
+                return min(matches, key=len)
             return None
-        home=find_team(home_raw)
-        away=find_team(away_raw)
+        home = find_team(home_raw)
+        away = find_team(away_raw)
         if not home:
-            send(chat_id,f"Tim tidak ditemukan: {home_raw}\nKetik /tim {match}"); return
+            send(chat_id, f"❌ Tim kandang <code>{home_raw}</code> tidak ditemukan di {liga}\nKetik /tim {liga}", token)
+            return
         if not away:
-            send(chat_id,f"Tim tidak ditemukan: {away_raw}\nKetik /tim {match}"); return
-        r=predict_match(v20,home,away,match)
+            send(chat_id, f"❌ Tim tamu <code>{away_raw}</code> tidak ditemukan di {liga}\nKetik /tim {liga}", token)
+            return
+        r = predict_match(v20, home, away, liga)
         if not r:
-            send(chat_id,"Prediksi gagal"); return
-        name=LIGA_NAME.get(match,match)
-        emoji=LIGA_EMOJI.get(match,"\U0001f3c6")
-        top_sc=" | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
-        gap=r["elo_h"]-r["elo_a"]
-        tier_icon="\U0001f3af" if r["tier"]=="SNIPER" else "\u23f8\ufe0f"
+            send(chat_id, "❌ Prediksi gagal", token)
+            return
+        emoji     = LIGA_EMOJI.get(liga,"🏆")
+        name      = LIGA_NAME.get(liga,liga)
+        top_sc    = " | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
+        tier_icon = "🎯" if r["tier"]=="SNIPER" else "⏸"
+        tier_clr  = "✅" if r["tier"]=="SNIPER" else "⚠️"
+        gap       = r["elo_h"]-r["elo_a"]
         send(chat_id,
             f"{emoji} <b>{name}</b>\n"
-            f"\u2501"*25+"\n"
-            f"\U0001f3e0 <b>{home}</b>\n"
-            f"\u2708\ufe0f <b>{away}</b>\n"
-            f"\u2501"*25+"\n"
-            f"{tier_icon} TIER: <b>{r[\'tier\']}</b>\n"
-            f"{PRED_ICON[r[\'pred\']]} PREDIKSI: <b>{PRED_LABEL[r[\'pred\']]}</b>\n"
-            f"\U0001f4ca Confidence: <b>{r[\'conf\']*100:.1f}%</b> (min {r[\'thr\']*100:.0f}%)\n"
-            f"\u2501"*25+"\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"🏠 <b>{home}</b>\n"
+            f"✈️ <b>{away}</b>\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"{tier_clr} <b>TIER: {tier_icon} {r['tier']}</b>\n"
+            f"{PRED_ICON[r['pred']]} <b>PREDIKSI: {PRED_LABEL[r['pred']]}</b>\n"
+            f"📊 Confidence: <b>{r['conf']*100:.1f}%</b> (min {r['thr']*100:.0f}%)\n\n"
             f"Probabilitas:\n"
-            f"  \U0001f3e0 Kandang : {r[\'ph\']*100:.1f}%\n"
-            f"  \U0001f91d Seri    : {r[\'pd\']*100:.1f}%\n"
-            f"  \u2708\ufe0f  Tandang : {r[\'pa\']*100:.1f}%\n"
-            f"\u2501"*25+"\n"
-            f"\u26bd Ekspektasi gol : {r[\'lh\']} - {r[\'la\']}\n"
-            f"\U0001f3af Skor prediksi  : {top_sc}\n"
-            f"\U0001f4c8 Elo : {r[\'elo_h\']} vs {r[\'elo_a\']} (gap {gap:+d})"
+            f"  🏠 Kandang : {r['ph']*100:.1f}%\n"
+            f"  🤝 Seri    : {r['pd']*100:.1f}%\n"
+            f"  ✈️  Tandang : {r['pa']*100:.1f}%\n\n"
+            f"⚽ Ekspektasi gol : {r['lh']} – {r['la']}\n"
+            f"🎯 Skor prediksi  : {top_sc}\n"
+            f"📈 Elo: {r['elo_h']} vs {r['elo_a']} (gap {gap:+d})\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"<i>Shadow mode — bukan saran finansial</i>",
+            token
         )
     except Exception as e:
         send(chat_id,
-            f"Format salah\n\n"
-            f"Contoh:\n"
+            f"⚠️ Format salah\n\n"
+            f"Contoh benar:\n"
             f"/prediksi Arsenal vs Chelsea EPL\n"
-            f"/prediksi Real Madrid vs Barcelona La_Liga"
+            f"/prediksi Real Madrid vs Barcelona La_Liga\n"
+            f"/prediksi PSV vs Ajax Eredivisie\n\n"
+            f"Ketik /tim [liga] untuk daftar nama tim lengkap",
+            token
         )
 
-def cmd_picks(chat_id, v20):
-    now=datetime.now()
-    week_start=now-timedelta(days=now.weekday())
-    week_end=week_start+timedelta(days=6)
+def cmd_picks(chat_id, v20, token):
+    now        = datetime.now()
+    week_start = now - timedelta(days=now.weekday())
+    week_end   = week_start + timedelta(days=6)
     send(chat_id,
-        f"\U0001f3af <b>FOOTBALL SNIPER</b> — Weekly Picks\n"
-        f"\u2501"*25+"\n"
-        f"\U0001f4c5 Pekan: {week_start.strftime('%d %b')} - {week_end.strftime('%d %b %Y')}\n"
-        f"\U0001f916 Model V20.4.5 | Akurasi WF: 81.4%\n"
-        f"\u2501"*25
+        f"🎯 <b>SNIPER Picks Pekan Ini</b>\n"
+        f"📅 {week_start.strftime('%d %b')} – {week_end.strftime('%d %b %Y')}\n"
+        f"⏳ Generating...", token
     )
-    total=0
+    total = 0
     for liga in v20.get("active_leagues",[]):
-        DC=v20["dc_params"].get(liga,{})
-        teams=sorted(DC.get("attack",{}).keys())
+        DC    = v20["dc_params"].get(liga,{})
+        teams = sorted(DC.get("attack",{}).keys())
         if len(teams)<2: continue
-        ELO=v20["elo"].get(liga,{})
-        top=sorted(teams,key=lambda t:-ELO.get(t,1500))[:8]
-        picks=[]
-        seen=set()
+        ELO   = v20["elo"].get(liga,{})
+        top   = sorted(teams,key=lambda t:-ELO.get(t,1500))[:8]
+        picks = []
+        seen  = set()
         for h in top:
             for a in top:
                 if h==a or (h,a) in seen: continue
@@ -265,85 +281,95 @@ def cmd_picks(chat_id, v20):
                 if r and r["tier"]=="SNIPER":
                     picks.append((h,a,r))
         if not picks: continue
-        emoji=LIGA_EMOJI.get(liga,"\U0001f3c6")
-        name=LIGA_NAME.get(liga,liga)
-        lines=[f"\n{emoji} <b>{name}</b>","\u2014"*24]
-        for idx,(h,a,r) in enumerate(picks[:3],1):
-            match_day=week_start+timedelta(days=min(idx,6))
-            top_sc=" | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
-            gap=r["elo_h"]-r["elo_a"]
+        emoji = LIGA_EMOJI.get(liga,"🏆")
+        name  = LIGA_NAME.get(liga,liga)
+        lines = [f"{emoji} <b>{name}</b>\n{'─'*22}"]
+        for idx,(h,a,r) in enumerate(picks[:2],1):
+            match_day = week_start+timedelta(days=min(idx,6))
+            top_sc    = " | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
+            gap       = r["elo_h"]-r["elo_a"]
             lines.append(
-                f"\n\U0001f522 <b>Match #{idx}</b>\n"
-                f"\U0001f3e0 <b>{h}</b>\n"
-                f"\u2708\ufe0f <b>{a}</b>\n"
-                f"\U0001f4c5 Est. {match_day.strftime('%A, %d %b %Y')}\n"
-                f"\n"
-                f"{PRED_ICON[r[\'pred\']]} <b>PREDIKSI: {PRED_LABEL[r[\'pred\']]}</b>\n"
-                f"\U0001f4ca Confidence : <b>{r[\'conf\']*100:.1f}%</b> (min {r[\'thr\']*100:.0f}%)\n"
-                f"\n"
-                f"Probabilitas:\n"
-                f"  \U0001f3e0 Kandang : {r[\'ph\']*100:.1f}%\n"
-                f"  \U0001f91d Seri    : {r[\'pd\']*100:.1f}%\n"
-                f"  \u2708\ufe0f  Tandang : {r[\'pa\']*100:.1f}%\n"
-                f"\n"
-                f"\u26bd Ekspektasi gol : {r[\'lh\']} - {r[\'la\']}\n"
-                f"\U0001f3af Skor prediksi  : {top_sc}\n"
-                f"\U0001f4c8 Elo : {r[\'elo_h\']} vs {r[\'elo_a\']} (gap {gap:+d})\n"
-                f"\u2501"*24
+                f"\n🔢 Match #{idx}\n"
+                f"🏠 <b>{h}</b>\n✈️ <b>{a}</b>\n"
+                f"📅 Est. {match_day.strftime('%A, %d %b')}\n\n"
+                f"{PRED_ICON[r['pred']]} <b>{PRED_LABEL[r['pred']]}</b> — {r['conf']*100:.1f}%\n"
+                f"  Kandang {r['ph']*100:.1f}% | Seri {r['pd']*100:.1f}% | Tandang {r['pa']*100:.1f}%\n"
+                f"⚽ {r['lh']}–{r['la']} | 🎯 {top_sc}\n"
+                f"{'─'*22}"
             )
             total+=1
-        send(chat_id,"\n".join(lines))
+        send(chat_id,"\n".join(lines),token)
     send(chat_id,
-        f"\u2501"*25+"\n"
-        f"\u2705 Total SNIPER picks : <b>{total}</b>\n"
-        f"\u23f0 Dikirim : {now.strftime('%d %b %Y %H:%M')} UTC\n"
-        f"\u2501"*25+"\n"
-        f"<i>Shadow mode — bukan saran finansial</i>"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"✅ Total SNIPER: <b>{total} picks</b>\n"
+        f"<i>Shadow mode — bukan saran finansial</i>",token
     )
 
 def run_bot():
-    token=_get_token()
-    chat=_get_chat()
-    print(f"Token set: {bool(token)}")
-    print(f"Chat set : {bool(chat)}")
-    v20=load_model()
+    """Long polling — jalankan di Colab"""
+    v20 = load_model()
     if not v20:
-        print("ERROR: Model not found"); return
-    print(f"Bot aktif | {len(v20.get('active_leagues',[]))} liga")
-    offset=0
+        print("❌ Model tidak ditemukan"); return
+    print(f"✅ Bot aktif | {len(v20.get('active_leagues',[]))} liga")
+    print("Kirim /start ke bot untuk mulai\nCtrl+C untuk stop\n")
+    offset = 0
     while True:
         try:
-            r=requests.get(
-                f"https://api.telegram.org/bot{token}/getUpdates",
+            r = requests.get(
+                f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/getUpdates",
                 params={"offset":offset,"timeout":30},
                 timeout=35
             )
-            for upd in r.json().get("result",[]):
-                offset=upd["update_id"]+1
-                msg=upd.get("message",{})
+            updates = r.json().get("result",[])
+            for upd in updates:
+                offset = upd["update_id"]+1
+                msg    = upd.get("message",{})
                 if not msg: continue
-                chat_id=msg["chat"]["id"]
-                text=msg.get("text","").strip()
-                print(f"{datetime.now().strftime('%H:%M')} {text[:30]}")
+                chat_id = msg["chat"]["id"]
+                text    = msg.get("text","").strip()
+                username= msg.get("from",{}).get("username","?")
+                print(f"[{datetime.now().strftime('%H:%M')}] @{username}: {text}")
                 if   text.startswith("/start") or text.startswith("/help"):
-                    cmd_start(chat_id,v20)
+                    cmd_start(chat_id, v20, TELEGRAM_TOKEN)
                 elif text.startswith("/liga"):
-                    cmd_liga(chat_id,v20)
+                    cmd_liga(chat_id, v20, TELEGRAM_TOKEN)
                 elif text.startswith("/tim"):
-                    cmd_tim(chat_id,v20,text[4:].strip())
+                    cmd_tim(chat_id, v20, TELEGRAM_TOKEN, text[4:].strip())
                 elif text.startswith("/top"):
-                    cmd_top(chat_id,v20,text[4:].strip())
+                    cmd_top(chat_id, v20, TELEGRAM_TOKEN, text[4:].strip())
                 elif text.startswith("/prediksi"):
-                    cmd_prediksi(chat_id,v20,text[9:].strip())
+                    cmd_prediksi(chat_id, v20, TELEGRAM_TOKEN, text[9:].strip())
                 elif text.startswith("/picks"):
-                    cmd_picks(chat_id,v20)
+                    cmd_picks(chat_id, v20, TELEGRAM_TOKEN)
                 else:
-                    send(chat_id,"Perintah tidak dikenal\nKetik /help")
+                    send(chat_id,
+                        "❓ Perintah tidak dikenal\n\n"
+                        "Ketik /help untuk daftar perintah", TELEGRAM_TOKEN
+                    )
         except KeyboardInterrupt:
-            print("Bot stopped"); break
+            print("\n⏹ Bot dihentikan")
+            break
         except Exception as e:
             print(f"Error: {e}")
             time.sleep(5)
 
-if __name__ == "__main__":
-    run_bot()
+# Weekly picks (dipanggil GitHub Actions)
+def weekly_report():
+    v20=load_model()
+    if not v20: return
+    now=datetime.now()
+    ws=now-timedelta(days=now.weekday()); we=ws+timedelta(days=6)
+    send(TELEGRAM_CHAT,
+        f"🎯 <b>FOOTBALL SNIPER</b> — Weekly Picks\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"📅 {ws.strftime('%d %b')} – {we.strftime('%d %b %Y')}\n"
+        f"🤖 V20.4.5 | 81.4% WF Accuracy"
+    )
+    cmd_picks(TELEGRAM_CHAT, v20, TELEGRAM_TOKEN)
+
+if __name__=="__main__":
+    import sys
+    if len(sys.argv)>1 and sys.argv[1]=="weekly":
+        weekly_report()
+    else:
+        run_bot()
