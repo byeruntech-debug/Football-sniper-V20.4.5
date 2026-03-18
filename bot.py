@@ -962,6 +962,12 @@ def cmd_picks(chat_id, v20, token):
         "randers fc":               "Randers Fodbold Club",
         "silkeborg if":             "Silkeborg Idrætsforening",
         "viborg ff":                "Viborg Fodsports Forening",
+        # J1 League
+        "jef united ichihara-chiba": "JEF United",
+        "kyoto sanga":               "Kyoto",
+        "mito hollyhock":            "Mito HollyHock",
+        "tokyo verdy 1969":          "Verdy",
+        "urawa red diamonds":        "Urawa Reds",
         # J2 League
         "machida zelvia":           "Machida Zelvia",
         "mito hollyhock":           "Mito HollyHock",
