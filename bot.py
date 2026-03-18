@@ -550,13 +550,202 @@ def cmd_picks(chat_id, v20, token):
         ("atletico", "athletic"),
     ]
 
+    # Mapping eksplisit ESPN name -> Model name
+    ESPN_TO_MODEL = {
+        # EPL
+        "afc bournemouth":          "Bournemouth",
+        "brighton & hove albion":   "Brighton",
+        "manchester city":          "Man City",
+        "manchester united":        "Man United",
+        "newcastle united":         "Newcastle",
+        "nottingham forest":        "Nott'm Forest",
+        "tottenham hotspur":        "Tottenham",
+        "west ham united":          "West Ham",
+        "wolverhampton wanderers":  "Wolves",
+        "leeds united":             "Leeds",
+        # Bundesliga
+        "bayer leverkusen":         "Leverkusen",
+        "borussia dortmund":        "Dortmund",
+        "borussia monchengladbach": "M'gladbach",
+        "borussia mönchengladbach": "M'gladbach",
+        "eintracht frankfurt":      "Ein Frankfurt",
+        "fc augsburg":              "Augsburg",
+        "fc cologne":               "FC Koln",
+        "hamburg sv":               "Hamburg",
+        "1. fc heidenheim 1846":    "Heidenheim",
+        "1. fc union berlin":       "Union Berlin",
+        "sc freiburg":              "Freiburg",
+        "st. pauli":                "St Pauli",
+        "tsg hoffenheim":           "Hoffenheim",
+        "vfb stuttgart":            "Stuttgart",
+        "vfl wolfsburg":            "Wolfsburg",
+        # Serie A
+        "ac milan":                 "Milan",
+        "as roma":                  "Roma",
+        "hellas verona":            "Verona",
+        "internazionale":           "Inter",
+        # La Liga
+        "athletic club":            "Ath Bilbao",
+        "atletico madrid":          "Ath Madrid",
+        "atlético madrid":          "Ath Madrid",
+        "alavés":                   "Alaves",
+        "alaves":                   "Alaves",
+        "celta vigo":               "Celta",
+        "espanyol":                 "Espanol",
+        "rayo vallecano":           "Vallecano",
+        "real betis":               "Betis",
+        "real oviedo":              "Oviedo",
+        "real sociedad":            "Sociedad",
+        # Ligue 1
+        "paris saint-germain":      "Paris SG",
+        "stade rennais":            "Rennes",
+        "aj auxerre":               "Auxerre",
+        "as monaco":                "Monaco",
+        "le havre ac":              "Le Havre",
+        # Eredivisie
+        "ajax amsterdam":           "Ajax",
+        "fc groningen":             "Groningen",
+        "fc twente":                "Twente",
+        "fc utrecht":               "Utrecht",
+        "fc volendam":              "Volendam",
+        "feyenoord rotterdam":      "Feyenoord",
+        "fortuna sittard":          "For Sittard",
+        "heracles almelo":          "Heracles",
+        "nec nijmegen":             "Nijmegen",
+        "pec zwolle":               "Zwolle",
+        # Liga Portugal
+        "sporting cp":              "Sporting Clube de Portugal",
+        "benfica":                  "Sport Lisboa e Benfica",
+        "fc porto":                 "Futebol Clube do Porto",
+        "braga":                    "Sporting Clube de Braga",
+        "fc famalicao":             "Futebol Clube de Famalicão",
+        "vitória de guimaraes":     "Vitória Sport Clube",
+        "estoril":                  "Grupo Desportivo Estoril Praia",
+        "estrela":                  "Club Football Estrela da Amadora",
+        "arouca":                   "Futebol Clube de Arouca",
+        "casa pia":                 "Casa Pia Atlético Clube",
+        "alverca":                  "Futebol Clube de Alverca",
+        "rio ave":                  "Rio Ave Futebol Clube",
+        "santa clara":              "Clube Desportivo Santa Clara",
+        "moreirense":               "Moreirense Futebol Clube",
+        "avs":                      "AVS Futebol SAD",
+        "gil vicente":              "Gil Vicente Futebol Clube",
+        "tondela":                  "Clube Desportivo de Tondela",
+        "c.d. nacional":            "Clube Desportivo Nacional",
+        # Super Lig
+        "goztepe":                  "Goztep",
+        "istanbul basaksehir":      "Buyuksehyr",
+        "fatih karagümrük":         "Karagumruk",
+        "fatih karagumruk":         "Karagumruk",
+        "caykur rizespor":          "Rizespor",
+        "gaziantep fk":             "Gaziantep",
+        "genclerbirligi":           "Genclerbirligi",
+        "kocaelispor":              "Kocaelispor",
+        # Belgium
+        "anderlecht":               "Royal Sporting Club Anderlecht",
+        "antwerp":                  "Royal Antwerp Football Club",
+        "cercle brugge ksv":        "Cercle Brugge Koninklijke Sportvereniging",
+        "club brugge":              "Club Brugge Koninklijke Voetbalvereniging",
+        "kaa gent":                 "Koninklijke Atletiek Associatie Gent",
+        "kv mechelen":              "Yellow-Red Koninklijke Voetbalclub Mechelen",
+        "kvc westerlo":             "Koninklijke Voetbal Club Westerlo",
+        "oh leuven":                "Oud-Heverlee Leuven",
+        "racing genk":              "Koninklijke Racing Club Genk",
+        "royal charleroi sc":       "Royal Charleroi Sporting Club",
+        "sint-truidense":           "Koninklijke Sint-Truidense Voetbalvereniging",
+        "standard liege":           "Royal Standard Club de Liège",
+        "union st.-gilloise":       "Royale Union Saint-Gilloise",
+        "zulte-waregem":            "Sportvereniging Zulte Waregem",
+        "dender":                   "FC Verbroedering Denderhoutem Denderleeuw Eendracht Hekelgem",
+        # Scotland
+        "celtic":                   "The Celtic Football Club",
+        "rangers":                  "Rangers Football Club",
+        "heart of midlothian":      "Heart of Midlothian Football Club",
+        "hibernian":                "Hibernian Football Club",
+        "motherwell":               "Motherwell Football Club",
+        "falkirk":                  "Falkirk Football & Athletic Club",
+        "dundee united":            "Dundee United Football Club",
+        "dundee":                   "Dundee Football Club",
+        "aberdeen":                 "Aberdeen Football Club",
+        "kilmarnock":               "Kilmarnock Football Club",
+        "st mirren":                "Saint Mirren Football Club",
+        "livingston":               "Livingston Football Club",
+        # Greece
+        "olympiacos":               "Olympiakos Syndesmos Filathlon Peiraios",
+        "aek athens":               "Athlitiki Enosi Konstantinoupoleos",
+        "paok salonika":            "Panthessalonikios Athlitikos Omilos Konstantinoupoliton",
+        "panathinaikos":            "Panathinaikos Athlitikos Omilos",
+        "aris":                     "Aris Thessalonikis",
+        "atromitos":                "APS Atromitos Athinon",
+        "levadiakos":               "APO Levadiakos Football Club",
+        "ofi crete":                "Omilos Filathlon Irakliou FC",
+        "volos nfc":                "Volou Neos Podosferikos Syllogos",
+        "kifisia":                  "Athlitiki Enosi Kifisias",
+        "asteras tripoli":          "A.G.S Asteras Tripolis",
+        "panserraikos fc":          "Panserraikos Serres",
+        "larissa fc":               "Athlitiki Enosi Larisas",
+        # J1 League
+        "tokyo verdy 1969":         "Verdy",
+        "kyoto sanga":              "Kyoto",
+        "urawa red diamonds":       "Urawa Reds",
+        "fagiano okayama":          "Fagiano Okayama",
+        "jef united ichihara-chiba":"JEF United Ichihara",
+        "machida zelvia":           "Machida Zelvia",
+        "mito hollyhock":           "Mito Hollyhock",
+        # Brazil
+        "red bull bragantino":      "RB Bragantino",
+        "vasco da gama":            "Vasco",
+        # Venezuela
+        "academia anzoátegui":      "Dep. Anzoátegui",
+        "academia puerto cabello":  "Puerto Cabello",
+        "caracas fc":               "Caracas",
+        "deportivo la guaira":      "La Guaira",
+        "deportivo rayo zuliano":   "Rayo Zuliano",
+        "deportivo táchira":        "Dep. Táchira",
+        "estudiantes de mérida":    "Estudiantes M.",
+        "metropolitanos fc":        "Metropolitanos",
+        "monagas sc":               "Monagas",
+        # Russia
+        "akhmat grozny":            "RFK Akhmat Grozny",
+        "akron tolyatti":           "Akron Togliatti",
+        "cska moscow":              "PFK CSKA Moskva",
+        "dinamo moscow":            "FK Dinamo Moskva",
+        "dynamo makhachkala":       "Dinamo Makhachkala",
+        "fc baltika kaliningrad":   "FK Baltika",
+        "gazovik orenburg":         "FC Orenburg",
+        "krasnodar":                "FK Krasnodar",
+        "krylia sovetov":           "PFK Krylya Sovetov Samara",
+        "lokomotiv moscow":         "Футбольный клуб \"Локомотив\" Москва",
+        "nizhny novgorod":          "FK Nizhny Novgorod",
+        "rostov":                   "FK Rostov",
+        "rubin kazan":              "FC Rubin Kazan",
+        "sochi":                    "FK Sochi",
+        "spartak moscow":           "FK Spartak Moskva",
+        "zenit st petersburg":      "AO FK Zenit Sankt-Peterburg",
+        # Denmark
+        "agf":                      "Aarhus Gymnastik Forening",
+        "brøndby if":               "Brøndby Idrætsforening",
+        "f.c. københavn":           "Football Club København",
+        "fc fredericia":            "Fodbold Club Fredericia",
+        "fc midtjylland":           "Fodbold Club Midtjylland",
+        "fc nordsjælland":          "Fodbold Club Nordsjælland",
+        "randers fc":               "Randers Fodbold Club",
+        "silkeborg if":             "Silkeborg Idrætsforening",
+        "viborg ff":                "Viborg Fodsports Forening",
+    }
+
     def find_model_team(espn_name, model_teams):
         en = espn_name.lower().strip()
+        # Cek explicit mapping dulu
+        if en in ESPN_TO_MODEL:
+            mapped = ESPN_TO_MODEL[en]
+            if mapped in model_teams:
+                return mapped
         # Exact match
         for t in model_teams:
             if t.lower() == en:
                 return t
-        # Partial match
+        # Partial match - min 2 kata cocok
         best, best_score = None, 0
         for t in model_teams:
             tn = t.lower()
@@ -565,7 +754,7 @@ def cmd_picks(chat_id, v20, token):
             if score > best_score:
                 best_score = score
                 best = t
-        return best if best_score >= 2 else None  # min 2 kata cocok
+        return best if best_score >= 2 else None
 
     def is_blacklisted(espn_name, model_name):
         en = espn_name.lower()
