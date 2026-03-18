@@ -1141,11 +1141,10 @@ def cmd_picks(chat_id, v20, token):
                 try:
                     utc_dt  = _dt.datetime.strptime(raw_date[:16], "%Y-%m-%dT%H:%M")
                     wib_dt  = utc_dt + _dt.timedelta(hours=7)
-                    fix_date = raw_date[:10]
+                    fix_date = wib_dt.strftime("%Y-%m-%d")
                     fix_time = wib_dt.strftime("%H:%M")
                     # Skip jika sudah lewat
-                    if _dt.datetime.combine(_dt.date.fromisoformat(fix_date),
-                        _dt.time.fromisoformat(fix_time)) < now_dt:
+                    if wib_dt < now_dt:
                         continue
                 except:
                     fix_date = raw_date[:10]
