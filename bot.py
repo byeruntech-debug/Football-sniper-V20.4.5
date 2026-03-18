@@ -30,6 +30,22 @@ ESPN_KEYWORDS = {
     "ajax":["ajax"],"psv":["psv"],"porto":["porto"],
     "benfica":["benfica"],"sporting":["sporting cp"],
     "fenerbahce":["fenerbahce"],"galatasaray":["galatasaray"],
+    "ath bilbao":["athletic club","athletic bilbao"],
+    "ath madrid":["atletico madrid","atletico"],
+    "sociedad":["real sociedad"],
+    "betis":["real betis","betis"],
+    "espanol":["espanyol","espanol"],
+    "girona":["girona"],
+    "osasuna":["osasuna"],
+    "villarreal":["villarreal"],
+    "celta":["celta vigo"],
+    "valladolid":["valladolid"],
+    "mallorca":["mallorca"],
+    "sevilla":["sevilla"],
+    "valencia":["valencia"],
+    "getafe":["getafe"],
+    "rayo":["rayo vallecano"],
+    "alaves":["alaves","alavés"],
 }
 
 _fixtures_cache = {}
@@ -364,8 +380,15 @@ def cmd_picks(chat_id, v20, token):
         emoji = LIGA_EMOJI.get(liga,"🏆")
         name  = LIGA_NAME.get(liga,liga)
         lines = [f"{emoji} <b>{name}</b>\n{'─'*22}"]
-        for idx,(h,a,r) in enumerate(picks[:2],1):
-            match_day = find_fixture_date(liga, h, a)
+        # Tambah tanggal ke setiap pick lalu urutkan
+        picks_with_date = []
+        for h,a,r in picks[:6]:
+            d = find_fixture_date(liga, h, a)
+            picks_with_date.append((d, h, a, r))
+        # Urutkan: tanggal real dulu, TBD belakang
+        picks_with_date.sort(key=lambda x: (x[0]=="TBD", x[0]))
+        for idx,(match_day,h,a,r) in enumerate(picks_with_date[:2],1):
+            _ = match_day  # sudah diset
             top_sc    = " | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
             gap       = r["elo_h"]-r["elo_a"]
             lines.append(
