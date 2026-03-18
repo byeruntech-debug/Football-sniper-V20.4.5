@@ -464,7 +464,7 @@ def _refresh_fixtures():
                     utc_dt = _dt2.datetime.strptime(raw_date[:16], "%Y-%m-%dT%H:%M")
                     wib_dt = utc_dt + _dt2.timedelta(hours=7)
                     fix_time = wib_dt.strftime("%H:%M")
-                    fix_date = raw_date[:10]  # pakai tanggal asli UTC
+                    fix_date = wib_dt.strftime("%Y-%m-%d")  # pakai WIB date
                 except:
                     fix_time = None
                     fix_date = raw_date[:10]
