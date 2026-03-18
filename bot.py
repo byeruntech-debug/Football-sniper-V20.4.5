@@ -776,7 +776,6 @@ def cmd_picks(chat_id, v20, token):
         "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
         "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
         "Denmark":"den.1",
-        "J2_League":"jpn.2",
     }
 
     # Kata yang TIDAK boleh dicocokkan secara ambigu
@@ -1124,7 +1123,7 @@ def cmd_picks(chat_id, v20, token):
     send(chat_id,
         f"{'\u2501'*22}\n"
         f"\u2705 Total SNIPER: <b>{total} picks</b>\n"
-        f"\U0001f916 Model V20.4.5 | Dixon-Coles + Elo\n"
+        f"\U0001f916 Model V20.5.1 | Dixon-Coles + Elo\n"
         f"<i>Shadow mode — bukan saran finansial</i>", token
     )
 
@@ -1201,7 +1200,7 @@ def weekly_report():
         f"🎯 <b>FOOTBALL SNIPER</b> — Weekly Picks\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"📅 {ws.strftime('%d %b')} – {we.strftime('%d %b %Y')}\n"
-        f"🤖 V20.4.5 | 81.4% WF Accuracy"
+        f"🤖 V20.5.1 | 81.4% WF Accuracy"
     )
     cmd_picks(TELEGRAM_CHAT, v20, TELEGRAM_TOKEN)
 
