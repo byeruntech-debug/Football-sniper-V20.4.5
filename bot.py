@@ -4,6 +4,232 @@ import json, math, os, requests, time
 import numpy as np
 from scipy.stats import poisson
 from datetime import datetime, timedelta
+# ═══════════════════════════════════════
+# FITUR BARU: FORM, H2H, HISTORY, NOTIF
+# ═══════════════════════════════════════
+import json as _json
+
+HISTORY_FILE = "data/prediction_history.json"
+
+def _load_history():
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE) as f: return _json.load(f)
+    return {"predictions": [], "total": 0}
+
+def _save_history(h):
+    os.makedirs("data", exist_ok=True)
+    with open(HISTORY_FILE, "w") as f: _json.dump(h, f, indent=2)
+
+def _add_pred(home, away, liga, pred, conf):
+    h = _load_history()
+    pid = len(h["predictions"]) + 1
+    h["predictions"].append({
+        "id": pid, "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "home": home, "away": away, "liga": liga,
+        "pred": pred, "conf": round(conf, 4), "result": None, "correct": None
+    })
+    h["total"] = len(h["predictions"])
+    _save_history(h)
+    return pid
+
+def cmd_form(chat_id, v20, token, args):
+    parts = args.strip().split()
+    if len(parts) < 2:
+        send(chat_id, "⚠️ Format: /form [tim] [liga]\nContoh: /form Arsenal EPL", token); return
+    liga_raw = parts[-1]
+    team_raw = " ".join(parts[:-1])
+    match = None
+    for l in v20.get("active_leagues", []):
+        if liga_raw.lower() in l.lower() or l.lower() in liga_raw.lower():
+            match = l; break
+    if not match:
+        send(chat_id, "❌ Liga tidak ditemukan. Ketik /liga", token); return
+    DC = v20["dc_params"].get(match, {})
+    teams = list(DC.get("attack", {}).keys())
+    q = team_raw.lower()
+    team = next((t for t in teams if t.lower() == q), None)
+    if not team:
+        matches = [t for t in teams if q in t.lower()]
+        team = min(matches, key=len) if matches else None
+    if not team:
+        send(chat_id, f"❌ Tim tidak ditemukan di {match}\nKetik /tim {match}", token); return
+    ELO = v20["elo"].get(match, {})
+    h2h = v20.get("h2h_stats", {})
+    emoji = LIGA_EMOJI.get(match, "🏆")
+    name  = LIGA_NAME.get(match, match)
+    # Hitung form dari H2H aggregate
+    total_m = wins = draws = losses = 0
+    for key, val in h2h.items():
+        try: t1, t2 = eval(key)
+        except: continue
+        if team not in (t1, t2): continue
+        tot = val.get("total", 0)
+        if tot == 0: continue
+        if team == t1:
+            w = val.get("t1_wins", 0); d = val.get("draws", 0); l = val.get("t2_wins", 0)
+        else:
+            w = val.get("t2_wins", 0); d = val.get("draws", 0); l = val.get("t1_wins", 0)
+        total_m += tot; wins += w; draws += d; losses += l
+    if total_m > 0:
+        wp = wins/total_m*100; dp = draws/total_m*100; lp = losses/total_m*100
+        form_str = f"W:{wp:.0f}% D:{dp:.0f}% L:{lp:.0f}% ({total_m} matches)"
+    else:
+        form_str = "Data belum tersedia"
+    elo = int(ELO.get(team, 1500))
+    atk = round(DC["attack"].get(team, 0), 3)
+    dfn = round(DC["defense"].get(team, 0), 3)
+    send(chat_id,
+        f"{emoji} <b>{name}</b>\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"👕 <b>{team}</b>\n\n"
+        f"📊 <b>Form (dari H2H):</b>\n"
+        f"  {form_str}\n\n"
+        f"📈 <b>Rating Model:</b>\n"
+        f"  Elo Rating : {elo}\n"
+        f"  Atk Rating : {atk:+.3f}\n"
+        f"  Def Rating : {dfn:+.3f}", token)
+
+def cmd_h2h(chat_id, v20, token, args):
+    if " vs " not in args.lower():
+        send(chat_id, "⚠️ Format: /h2h [tim1] vs [tim2]\nContoh: /h2h Arsenal vs Chelsea", token); return
+    idx = args.lower().index(" vs ")
+    t1_raw = args[:idx].strip(); t2_raw = args[idx+4:].strip()
+    h2h = v20.get("h2h_stats", {})
+    found = None
+    for key, val in h2h.items():
+        try: t1, t2 = eval(key)
+        except: continue
+        if (t1_raw.lower() in t1.lower() or t1.lower() in t1_raw.lower()) and            (t2_raw.lower() in t2.lower() or t2.lower() in t2_raw.lower()):
+            found = (t1, t2, val); break
+        if (t1_raw.lower() in t2.lower() or t2.lower() in t1_raw.lower()) and            (t2_raw.lower() in t1.lower() or t1.lower() in t2_raw.lower()):
+            found = (t2, t1, val); break
+    if not found:
+        send(chat_id, f"📋 H2H: {t1_raw} vs {t2_raw}\nData belum tersedia", token); return
+    t1, t2, v = found
+    tot = v["total"]
+    hw = v.get("t1_wins", 0); aw = v.get("t2_wins", 0); dr = v.get("draws", 0)
+    dom = v.get("dominant_team", "?")
+    b1 = "█" * int(hw/tot*10) if tot else ""
+    b2 = "█" * int(aw/tot*10) if tot else ""
+    bd = "█" * int(dr/tot*10) if tot else ""
+    send(chat_id,
+        f"📋 <b>Head to Head</b>\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"🏠 <b>{t1}</b>\n"
+        f"✈️ <b>{t2}</b>\n"
+        f"Total: {tot} pertandingan\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"🏠 {t1[:15]}: {hw} ({hw/tot*100:.0f}%) {b1}\n"
+        f"🤝 Seri: {dr} ({dr/tot*100:.0f}%) {bd}\n"
+        f"✈️  {t2[:15]}: {aw} ({aw/tot*100:.0f}%) {b2}\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"👑 Dominan: <b>{dom}</b>\n"
+        f"📊 Draw rate: {v.get('draw_rate',0)*100:.1f}%", token)
+
+def cmd_history(chat_id, token, n=10):
+    h = _load_history()
+    preds = h.get("predictions", [])
+    if not preds:
+        send(chat_id, "📜 Belum ada history\nGunakan /prediksi untuk mulai", token); return
+    recent = preds[-n:][::-1]
+    PRED_L = {"home_win": "KANDANG", "draw": "SERI", "away_win": "TANDANG"}
+    lines = ["📜 <b>History Prediksi (10 terakhir)</b>\n━━━━━━━━━━━━━━━━━━━━━━━"]
+    for p in recent:
+        st = "✅" if p.get("correct") == True else ("❌" if p.get("correct") == False else "⏳")
+        lines.append(
+            f"\n#{p['id']} {st} [{p['liga']}] {p['date'][:10]}\n"
+            f"  {p['home'][:15]} vs {p['away'][:15]}\n"
+            f"  → {PRED_L.get(p['pred'], p['pred'])} ({p['conf']*100:.1f}%)"
+            + (f"\n  Hasil: {p['result']}" if p.get("result") else "")
+        )
+    done = [p for p in preds if p.get("correct") is not None]
+    if done:
+        corr = sum(1 for p in done if p.get("correct"))
+        lines.append(f"\n━━━━━━━━━━━━━━━━━━━━━━━\n📊 Akurasi: {corr}/{len(done)} ({corr/len(done)*100:.1f}%)")
+    lines.append("\nInput hasil: /hasil [id] [skor]")
+    send(chat_id, "\n".join(lines), token)
+
+def cmd_akurasi(chat_id, token):
+    h = _load_history()
+    preds = h.get("predictions", [])
+    done = [p for p in preds if p.get("correct") is not None]
+    if not done:
+        send(chat_id,
+            f"📊 <b>Statistik Akurasi</b>\n"
+            f"Belum ada prediksi yang diverifikasi\n\n"
+            f"Total prediksi: {len(preds)}\n"
+            f"Gunakan /hasil [id] [skor] untuk input hasil", token); return
+    corr = sum(1 for p in done if p["correct"])
+    acc  = corr/len(done)*100
+    from collections import defaultdict
+    by_liga = defaultdict(lambda: {"t": 0, "c": 0})
+    for p in done:
+        by_liga[p["liga"]]["t"] += 1
+        by_liga[p["liga"]]["c"] += int(p.get("correct", False))
+    lines = [
+        f"📊 <b>Akurasi Football Sniper</b>\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"✅ Benar : {corr}/{len(done)} ({acc:.1f}%)\n"
+        f"⏳ Pending: {len(preds)-len(done)} prediksi\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"🏆 <b>Per liga:</b>"
+    ]
+    for lg, v in sorted(by_liga.items(), key=lambda x: -x[1]["c"]/max(x[1]["t"],1)):
+        a2 = v["c"]/v["t"]*100 if v["t"] else 0
+        lines.append(f"  {LIGA_EMOJI.get(lg,'🏆')} {lg}: {v['c']}/{v['t']} ({a2:.0f}%)")
+    send(chat_id, "\n".join(lines), token)
+
+def cmd_hasil(chat_id, token, args):
+    parts = args.strip().split()
+    if len(parts) < 2:
+        send(chat_id, "⚠️ Format: /hasil [id] [skor]\nContoh: /hasil 5 2-1", token); return
+    try:
+        pid = int(parts[0]); skor = parts[1]
+        hg, ag = map(int, skor.split("-"))
+        h = _load_history()
+        target = next((p for p in h["predictions"] if p["id"] == pid), None)
+        if not target:
+            send(chat_id, f"❌ Prediksi #{pid} tidak ditemukan", token); return
+        actual = "home_win" if hg > ag else ("away_win" if hg < ag else "draw")
+        is_correct = target["pred"] == actual
+        target["result"] = skor; target["correct"] = is_correct
+        _save_history(h)
+        PRED_L = {"home_win": "MENANG KANDANG", "draw": "SERI", "away_win": "MENANG TANDANG"}
+        icon = "✅" if is_correct else "❌"
+        done = [p for p in h["predictions"] if p.get("correct") is not None]
+        corr = sum(1 for p in done if p.get("correct"))
+        msg = (
+            f"{icon} <b>Hasil diinput!</b>\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"#{pid}: {target['home']} vs {target['away']}\n"
+            f"Prediksi: {PRED_L.get(target['pred'],'?')}\n"
+            f"Hasil: {skor} ({PRED_L.get(actual,'?')})\n"
+            f"Status: {'BENAR ✅' if is_correct else 'SALAH ❌'}\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"📊 Total akurasi: {corr}/{len(done)} ({corr/len(done)*100:.1f}%)" if done else ""
+        )
+        send(chat_id, msg, token)
+    except Exception as e:
+        send(chat_id, f"❌ Error: {str(e)}\nFormat: /hasil [id] [skor]", token)
+
+def cmd_notif_set(chat_id, token, args, notif_store):
+    """Set jadwal notifikasi harian, format: /notif 07:00"""
+    parts = args.strip().split()
+    if not parts:
+        current = notif_store.get(str(chat_id), "off")
+        send(chat_id,
+            f"⏰ <b>Notifikasi Harian</b>\n"
+            f"Status: {current}\n\n"
+            f"Set jam: /notif 07:00\n"
+            f"Matikan: /notif off", token); return
+    jam = parts[0]
+    if jam.lower() == "off":
+        notif_store.pop(str(chat_id), None)
+        send(chat_id, "🔕 Notifikasi dimatikan", token)
+    else:
+        notif_store[str(chat_id)] = jam
+        send(chat_id, f"✅ Notifikasi harian diset: <b>{jam} WIB</b>\nBot akan kirim SNIPER picks setiap hari jam {jam}", token)
+
 LIGA_ESPN = {
     "EPL":"eng.1","Bundesliga":"ger.1","Serie_A":"ita.1",
     "La_Liga":"esp.1","Ligue_1":"fra.1","Eredivisie":"ned.1",
@@ -355,6 +581,12 @@ def cmd_start(chat_id, v20, token):
         f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
         f"📋 <b>PERINTAH TERSEDIA:</b>\n\n"
         f"/picks — SNIPER picks pekan ini\n"
+        f"/form [tim] [liga] — form tim\n"
+        f"/h2h [tim1] vs [tim2] — head to head\n"
+        f"/history — riwayat prediksi\n"
+        f"/akurasi — statistik akurasi\n"
+        f"/hasil [id] [skor] — input hasil\n"
+        f"/notif [jam] — notifikasi harian\n"
         f"/liga — Daftar semua liga aktif\n"
         f"/tim [liga] — Daftar tim di liga\n"
         f"  contoh: /tim EPL\n"
@@ -871,6 +1103,8 @@ def run_bot():
     v20 = load_model()
     if not v20:
         print("❌ Model tidak ditemukan"); return
+    _notif_store = {}  # chat_id -> jam WIB
+    _last_notif_date = {}  # track tanggal terakhir kirim
     print(f"✅ Bot aktif | {len(v20.get('active_leagues',[]))} liga")
     print("Kirim /start ke bot untuk mulai\nCtrl+C untuk stop\n")
     offset = 0
