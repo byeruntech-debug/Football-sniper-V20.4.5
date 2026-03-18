@@ -575,10 +575,25 @@ def send(chat_id, msg, token=None):
 
 def predict_match(v20, home, away, liga):
     DC = v20["dc_params"].get(liga,{})
-    if not DC or home not in DC.get("attack",{}) or away not in DC.get("attack",{}):
+    if not DC:
         return None
     atk,dfn,hfa,rho = DC["attack"],DC["defense"],DC["hfa"],DC["rho"]
-    lh=math.exp(atk[home]+dfn[away]+hfa); la=math.exp(atk[away]+dfn[home])
+
+    # Fallback untuk tim yang tidak ada di model
+    meta      = v20.get("liga_meta",{}).get(liga,{})
+    att_fb    = meta.get("att_fallback", 0.0)   # log-scale fallback
+    def_fb    = meta.get("def_fallback", 0.0)   # log-scale fallback
+
+    att_home  = atk.get(home, att_fb)
+    def_home  = dfn.get(home, def_fb)
+    att_away  = atk.get(away, att_fb)
+    def_away  = dfn.get(away, def_fb)
+
+    # Jika keduanya tidak dikenal → skip (tidak reliable)
+    if home not in atk and away not in atk:
+        return None
+
+    lh=math.exp(att_home+def_away+hfa); la=math.exp(att_away+def_home)
     M=np.zeros((9,9))
     for gh in range(9):
         for ga in range(9):

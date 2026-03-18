@@ -53706,7 +53706,9 @@
       "n_matches": 3015,
       "seasons": "1999-2026",
       "approach": "hybrid_domestic_ucl",
-      "log_scale": true
+      "log_scale": true,
+      "att_fallback": 7.407407407620412e-08,
+      "def_fallback": 1.02798428206033e-18
     }
   }
 }
