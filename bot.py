@@ -237,6 +237,7 @@ LIGA_ESPN = {
     "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
     "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
     "Denmark":"den.1","Ukraine":"ukr.1",
+    "J2_League":"jpn.2",
 }
 
 ESPN_KEYWORDS = {
@@ -505,7 +506,8 @@ LIGA_EMOJI = {
     "EPL":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Bundesliga":"🇩🇪","Serie_A":"🇮🇹","La_Liga":"🇪🇸",
     "Ligue_1":"🇫🇷","Eredivisie":"🇳🇱","Liga_Portugal":"🇵🇹","Super_Lig":"🇹🇷",
     "Belgium":"🇧🇪","Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Greece":"🇬🇷","J1_League":"🇯🇵",
-    "Brazil":"🇧🇷","Venezuela":"🇻🇪","Russia":"🇷🇺","Denmark":"🇩🇰","Ukraine":"🇺🇦",
+    "Brazil":"🇧🇷","Venezuela":"🇻🇪","Russia":"🇷🇺","Denmark":"🇩🇰","Ukraine":"🇺🇦",,
+    "J2_League":"🇯🇵2️",
 }
 LIGA_NAME = {
     "EPL":"Premier League","Bundesliga":"Bundesliga","Serie_A":"Serie A",
@@ -513,7 +515,8 @@ LIGA_NAME = {
     "Liga_Portugal":"Primeira Liga","Super_Lig":"Süper Lig","Belgium":"Pro League",
     "Scotland":"Premiership","Greece":"Super League","J1_League":"J1 League",
     "Brazil":"Série A","Venezuela":"Liga FUTVE","Russia":"Premier Liga",
-    "Denmark":"Superliga","Ukraine":"Premier Liga",
+    "Denmark":"Superliga","Ukraine":"Premier Liga",,
+    "J2_League":"J2 League",
 }
 PRED_LABEL = {"home_win":"MENANG KANDANG","draw":"SERI","away_win":"MENANG TANDANG"}
 PRED_ICON  = {"home_win":"🏠","draw":"🤝","away_win":"✈️"}
@@ -773,6 +776,7 @@ def cmd_picks(chat_id, v20, token):
         "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
         "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
         "Denmark":"den.1",
+        "J2_League":"jpn.2",
     }
 
     # Kata yang TIDAK boleh dicocokkan secara ambigu
@@ -959,6 +963,33 @@ def cmd_picks(chat_id, v20, token):
         "randers fc":               "Randers Fodbold Club",
         "silkeborg if":             "Silkeborg Idrætsforening",
         "viborg ff":                "Viborg Fodsports Forening",
+        # J2 League
+        "machida zelvia":           "Machida Zelvia",
+        "mito hollyhock":           "Mito HollyHock",
+        "fagiano okayama":          "Fagiano Okayama",
+        "jef united":               "JEF United",
+        "jef united ichihara chiba":"JEF United",
+        "ventforet kofu":           "Ventforet Kofu",
+        "albirex niigata":          "Albirex Niigata",
+        "roasso kumamoto":          "Roasso Kumamoto",
+        "blaublitz akita":          "Blaublitz Akita",
+        "grulla morioka":           "Grulla Morioka",
+        "renofa yamaguchi":         "Renofa Yamaguchi",
+        "tochigi sc":               "Tochigi SC",
+        "thespakusatsu gunma":      "Thespakusatsu Gunma",
+        "giravanz kitakyushu":      "Giravanz Kitakyushu",
+        "fc ryukyu":                "FC Ryukyu",
+        "ehime fc":                 "Ehime FC",
+        "jubilo iwata":             "Jubilo Iwata",
+        "kataller toyama":          "Kataller Toyama",
+        "iwaki fc":                 "Iwaki FC",
+        "fc imabari":               "FC Imabari",
+        "fujieda myfc":             "Fujieda MYFC",
+        "kagoshima united":         "Kagoshima United",
+        "sc sagamihara":            "SC Sagamihara",
+        "toolbox kanazawa":         "Toolbox Kanazawa",
+        "montedio yamagata":        "Montedio Yamagata",
+        "omiya ardija":             "Omiya Ardija",
     }
 
     def find_model_team(espn_name, model_teams):
