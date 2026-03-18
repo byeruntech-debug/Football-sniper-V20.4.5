@@ -51494,8 +51494,8 @@
   "sniper_threshold": {
     "La_Liga": 0.58,
     "EPL": 0.65,
-    "Bundesliga": 0.66,
-    "Serie_A": 0.68,
+    "Bundesliga": 0.58,
+    "Serie_A": 0.52,
     "Eredivisie": 0.59,
     "Ligue_1": 0.63,
     "Liga_Portugal": 0.68,

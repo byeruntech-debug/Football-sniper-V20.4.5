@@ -236,8 +236,7 @@ LIGA_ESPN = {
     "Liga_Portugal":"por.1","Super_Lig":"tur.1","Belgium":"bel.1",
     "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
     "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
-    "Denmark":"den.1","Ukraine":"ukr.1",
-    "J2_League":"jpn.2",
+    "Denmark":"den.1",
     "UCL":"uefa.champions",
 }
 
