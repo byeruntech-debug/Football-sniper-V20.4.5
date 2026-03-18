@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Football Sniper Bot V20.4.5 — Interactive Telegram Bot"""
+"""Football Sniper Bot V20.4.5 — with form/h2h/history/notif — Interactive Telegram Bot"""
 import json, math, os, requests, time
 import numpy as np
 from scipy.stats import poisson
