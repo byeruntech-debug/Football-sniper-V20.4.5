@@ -4,6 +4,62 @@ import json, math, os, requests, time
 import numpy as np
 from scipy.stats import poisson
 from datetime import datetime, timedelta
+LIGA_ESPN = {
+    "EPL":"eng.1","Bundesliga":"ger.1","Serie_A":"ita.1",
+    "La_Liga":"esp.1","Ligue_1":"fra.1","Eredivisie":"ned.1",
+    "Liga_Portugal":"por.1","Super_Lig":"tur.1","Belgium":"bel.1",
+    "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
+    "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
+    "Denmark":"den.1","Ukraine":"ukr.1",
+}
+
+_fixtures_cache = {}
+_fixtures_updated = None
+
+def _refresh_fixtures():
+    global _fixtures_cache, _fixtures_updated
+    import datetime as _dt
+    today = _dt.date.today()
+    if _fixtures_updated == today and _fixtures_cache:
+        return
+    date_from = today.strftime("%Y%m%d")
+    date_to   = (today + _dt.timedelta(days=30)).strftime("%Y%m%d")
+    for liga, slug in LIGA_ESPN.items():
+        try:
+            r = requests.get(
+                f"https://site.api.espn.com/apis/site/v2/sports/soccer/{slug}/scoreboard",
+                headers={"User-Agent":"Mozilla/5.0"}, timeout=8,
+                params={"dates": f"{date_from}-{date_to}"}
+            )
+            if r.status_code != 200:
+                continue
+            fixes = []
+            for e in r.json().get("events",[]):
+                comps = e["competitions"][0]["competitors"]
+                home  = next(c for c in comps if c["homeAway"]=="home")["team"]["displayName"]
+                away  = next(c for c in comps if c["homeAway"]=="away")["team"]["displayName"]
+                date  = e["date"][:10]
+                fixes.append({"date": date, "home": home, "away": away})
+            _fixtures_cache[liga] = fixes
+        except:
+            pass
+    _fixtures_updated = today
+    print(f"[Bot] Fixtures refreshed: {sum(len(v) for v in _fixtures_cache.values())} total")
+
+def find_fixture_date(liga, home_model, away_model):
+    _refresh_fixtures()
+    fixes = _fixtures_cache.get(liga, [])
+    home_low = home_model.lower()
+    away_low = away_model.lower()
+    for fix in fixes:
+        fh = fix["home"].lower()
+        fa = fix["away"].lower()
+        h_match = any(w in fh for w in home_low.split() if len(w)>3) or any(w in home_low for w in fh.split() if len(w)>3)
+        a_match = any(w in fa for w in away_low.split() if len(w)>3) or any(w in away_low for w in fa.split() if len(w)>3)
+        if h_match and a_match:
+            return fix["date"]
+    return "TBD"
+
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN","")
 TELEGRAM_CHAT  = os.environ.get("TELEGRAM_CHAT","")
