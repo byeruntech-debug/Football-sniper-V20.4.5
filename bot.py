@@ -646,12 +646,52 @@ def predict_match(v20, home, away, liga):
     conf=max(ph,pd,pa)
     pred=["home_win","draw","away_win"][[ph,pd,pa].index(conf)]
     thr=v20["sniper_threshold"].get(liga,0.65)
+
+    # ── Adaptive threshold untuk UCL ─────────────────
+    if liga == "UCL":
+        thr_base = thr  # 0.68
+        thr_high = thr_base + 0.02  # 0.70 — default ketat
+        thr_low  = thr_base         # 0.68 — kalau ada justifikasi
+
+        # Faktor 1: Elo gap (tim jelas lebih kuat)
+        elo_gap = abs(rh_ - ra_)
+        elo_justified = elo_gap >= 100
+
+        # Faktor 2: H2H aktif (sudah di-adjust sebelumnya)
+        h2h_ucl  = v20.get("h2h_ucl", {})
+        _hkey    = f"({min(home,away)}, {max(home,away)})"
+        _hx      = h2h_ucl.get(_hkey, {})
+        h2h_active = (
+            _hx.get("meetings", 0) >= 4 and
+            _hx.get("dominant_team") is not None and
+            _hx.get("dominance", 0) >= 0.60
+        )
+
+        # Faktor 3: Kekuatan DC jauh berbeda
+        _dc    = v20["dc_params"]["UCL"]
+        _meta  = v20.get("liga_meta", {}).get("UCL", {})
+        _afb   = _meta.get("att_fallback", 0.0)
+        _dfb   = _meta.get("def_fallback", 0.0)
+        str_h  = math.exp(_dc["attack"].get(home,_afb) - _dc["defense"].get(home,_dfb))
+        str_a  = math.exp(_dc["attack"].get(away,_afb) - _dc["defense"].get(away,_dfb))
+        str_gap = abs(str_h - str_a)
+        dc_justified = str_gap >= 1.5  # gap kekuatan DC signifikan
+
+        # Tentukan threshold adaptif
+        n_factors = sum([elo_justified, h2h_active, dc_justified])
+        if n_factors >= 2:
+            thr = thr_low   # 0.68 — 2+ faktor → lebih longgar
+        elif n_factors == 1:
+            thr = thr_base + 0.01  # 0.69 — 1 faktor → tengah
+        else:
+            thr = thr_high  # 0.70 — tidak ada faktor → ketat
+
     flat=np.argsort(M.ravel())[::-1][:3]
     top=[(int(i//9),int(i%9),float(M.ravel()[i])) for i in flat]
     return {
         "pred":pred,"conf":round(conf,4),"tier":"SNIPER" if conf>=thr else "HOLD",
         "ph":round(ph,3),"pd":round(pd,3),"pa":round(pa,3),
-        "thr":thr,"lh":round(lh,2),"la":round(la,2),
+        "thr":round(thr,2),"lh":round(lh,2),"la":round(la,2),
         "top_scores":top,"elo_h":rh_,"elo_a":ra_,
     }
 
