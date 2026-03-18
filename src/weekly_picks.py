@@ -5,9 +5,13 @@ import numpy as np
 from scipy.stats import poisson
 from datetime import datetime, timedelta
 
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN","")
-TELEGRAM_CHAT  = os.environ.get("TELEGRAM_CHAT","")
-MODEL_PATH     = "data/model_v20_complete.json"
+MODEL_PATH = "data/model_v20_complete.json"
+
+def _get_token():
+    return os.environ.get("TELEGRAM_TOKEN","")
+
+def _get_chat():
+    return os.environ.get("TELEGRAM_CHAT","")
 
 LIGA_EMOJI = {
     "EPL":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Bundesliga":"🇩🇪","Serie_A":"🇮🇹","La_Liga":"🇪🇸",
@@ -33,7 +37,7 @@ def load_model():
     return None
 
 def send(chat_id, msg, token=None):
-    tk = token or TELEGRAM_TOKEN
+    tk = token or _get_token()
     for chunk in [msg[i:i+4000] for i in range(0,len(msg),4000)]:
         requests.post(
             f"https://api.telegram.org/bot{tk}/sendMessage",
@@ -316,7 +320,7 @@ def run_bot():
     while True:
         try:
             r = requests.get(
-                f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/getUpdates",
+                f"https://api.telegram.org/bot{_get_token()}/getUpdates",
                 params={"offset":offset,"timeout":30},
                 timeout=35
             )
@@ -330,17 +334,17 @@ def run_bot():
                 username= msg.get("from",{}).get("username","?")
                 print(f"[{datetime.now().strftime('%H:%M')}] @{username}: {text}")
                 if   text.startswith("/start") or text.startswith("/help"):
-                    cmd_start(chat_id, v20, TELEGRAM_TOKEN)
+                    cmd_start(chat_id, v20, _get_token())
                 elif text.startswith("/liga"):
-                    cmd_liga(chat_id, v20, TELEGRAM_TOKEN)
+                    cmd_liga(chat_id, v20, _get_token())
                 elif text.startswith("/tim"):
-                    cmd_tim(chat_id, v20, TELEGRAM_TOKEN, text[4:].strip())
+                    cmd_tim(chat_id, v20, _get_token(), text[4:].strip())
                 elif text.startswith("/top"):
-                    cmd_top(chat_id, v20, TELEGRAM_TOKEN, text[4:].strip())
+                    cmd_top(chat_id, v20, _get_token(), text[4:].strip())
                 elif text.startswith("/prediksi"):
-                    cmd_prediksi(chat_id, v20, TELEGRAM_TOKEN, text[9:].strip())
+                    cmd_prediksi(chat_id, v20, _get_token(), text[9:].strip())
                 elif text.startswith("/picks"):
-                    cmd_picks(chat_id, v20, TELEGRAM_TOKEN)
+                    cmd_picks(chat_id, v20, _get_token())
                 else:
                     send(chat_id,
                         "❓ Perintah tidak dikenal\n\n"
@@ -359,13 +363,13 @@ def weekly_report():
     if not v20: return
     now=datetime.now()
     ws=now-timedelta(days=now.weekday()); we=ws+timedelta(days=6)
-    send(TELEGRAM_CHAT,
+    send(_get_chat(),
         f"🎯 <b>FOOTBALL SNIPER</b> — Weekly Picks\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"📅 {ws.strftime('%d %b')} – {we.strftime('%d %b %Y')}\n"
         f"🤖 V20.4.5 | 81.4% WF Accuracy"
     )
-    cmd_picks(TELEGRAM_CHAT, v20, TELEGRAM_TOKEN)
+    cmd_picks(_get_chat(), v20, _get_token())
 
 if __name__=="__main__":
     import sys
