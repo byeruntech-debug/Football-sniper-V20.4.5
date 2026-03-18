@@ -83,12 +83,36 @@ def _refresh_fixtures():
                 comps = e["competitions"][0]["competitors"]
                 home  = next(c for c in comps if c["homeAway"]=="home")["team"]["displayName"]
                 away  = next(c for c in comps if c["homeAway"]=="away")["team"]["displayName"]
-                fixes.append({"date": e["date"][:10], "home": home, "away": away})
+                # Simpan jam dalam WIB (UTC+7)
+                import datetime as _dt2
+                raw_date = e["date"]  # format: 2026-03-18T13:00Z
+                try:
+                    utc_dt = _dt2.datetime.strptime(raw_date[:16], "%Y-%m-%dT%H:%M")
+                    wib_dt = utc_dt + _dt2.timedelta(hours=7)
+                    fix_time = wib_dt.strftime("%H:%M")
+                    fix_date = wib_dt.strftime("%Y-%m-%d")
+                except:
+                    fix_time = None
+                    fix_date = raw_date[:10]
+                fixes.append({"date": fix_date, "time": fix_time, "home": home, "away": away})
             _fixtures_cache[liga] = fixes
         except:
             pass
     _fixtures_date = today
     print(f"[Bot] Fixtures: {sum(len(v) for v in _fixtures_cache.values())} total")
+
+def _get_fixture_time(liga, home_model, away_model):
+    """Ambil jam pertandingan dari ESPN cache"""
+    for fix in _fixtures_cache.get(liga, []):
+        fh, fa = fix["home"], fix["away"]
+        if (_is_match(home_model, fh) and _is_match(away_model, fa)) or            (_is_match(home_model, fa) and _is_match(away_model, fh)):
+            if "time" in fix:
+                import datetime as _dt
+                try:
+                    return _dt.time.fromisoformat(fix["time"])
+                except:
+                    return None
+    return None
 
 def find_fixture_date(liga, home_model, away_model):
     _refresh_fixtures()
@@ -361,7 +385,8 @@ def cmd_picks(chat_id, v20, token):
         f"⏳ Generating...", token
     )
     import datetime as _dt
-    today_date = _dt.date.today()
+    now_dt = _dt.datetime.utcnow() + _dt.timedelta(hours=7)  # WIB
+    today_date = now_dt.date()
     total = 0
     all_picks = []  # Kumpulkan semua picks dari semua liga
 
@@ -375,7 +400,7 @@ def cmd_picks(chat_id, v20, token):
         seen  = set()
         for h in top:
             for a in top:
-                if h==a or (h,a) in seen: continue
+                if h==a or (h,a) in seen or (a,h) in seen: continue
                 seen.add((h,a))
                 r=predict_match(v20,h,a,liga)
                 if r and r["tier"]=="SNIPER":
@@ -390,7 +415,19 @@ def cmd_picks(chat_id, v20, token):
                 try:
                     fix_date = _dt.date.fromisoformat(d)
                     if fix_date < today_date:
-                        d = "TBD"
+                        d = "TBD"  # sudah lewat
+                    # Kalau hari ini, cek jam dari ESPN
+                    elif fix_date == today_date:
+                        # Cari jam dari fixture ESPN
+                        fix_time = _get_fixture_time(liga, h, a)
+                        if fix_time:
+                            fix_dt = _dt.datetime.combine(fix_date, fix_time)
+                            if fix_dt < now_dt:
+                                d = "TBD"  # jam sudah lewat
+                            else:
+                                d = f"{d} {fix_time.strftime('%H:%M')} WIB"
+                        else:
+                            d = d  # tampilkan tanggal saja
                 except:
                     d = "TBD"
             all_picks.append((d, liga, h, a, r))
