@@ -522,98 +522,165 @@ def cmd_prediksi(chat_id, v20, token, args):
         )
 
 def cmd_picks(chat_id, v20, token):
-    now        = datetime.now()
-    week_start = now - timedelta(days=now.weekday())
-    week_end   = week_start + timedelta(days=6)
-    send(chat_id,
-        f"🎯 <b>SNIPER Picks Pekan Ini</b>\n"
-        f"📅 {week_start.strftime('%d %b')} – {week_end.strftime('%d %b %Y')}\n"
-        f"⏳ Generating...", token
-    )
     import datetime as _dt
-    now_dt = _dt.datetime.utcnow() + _dt.timedelta(hours=7)  # WIB
-    today_date = now_dt.date()
-    total = 0
-    all_picks = []  # Kumpulkan semua picks dari semua liga
+    now_dt    = _dt.datetime.utcnow() + _dt.timedelta(hours=7)
+    today     = now_dt.date()
+    date_from = today.strftime("%Y%m%d")
+    date_to   = (today + _dt.timedelta(days=30)).strftime("%Y%m%d")
 
-    for liga in v20.get("active_leagues",[]):
-        DC    = v20["dc_params"].get(liga,{})
-        teams = sorted(DC.get("attack",{}).keys())
-        if len(teams)<2: continue
-        ELO   = v20["elo"].get(liga,{})
-        top   = sorted(teams,key=lambda t:-ELO.get(t,1500))[:8]
-        picks = []
-        seen  = set()
-        for h in top:
-            for a in top:
-                if h==a or (h,a) in seen or (a,h) in seen: continue
-                seen.add((h,a))
-                r=predict_match(v20,h,a,liga)
-                if r and r["tier"]=="SNIPER":
-                    picks.append((h,a,r))
-        if not picks: continue
+    send(chat_id,
+        f"\U0001f3af <b>SNIPER Picks — 30 Hari ke Depan</b>\n"
+        f"\U0001f4c5 {today.strftime('%d %b %Y')} s/d {(today+_dt.timedelta(days=30)).strftime('%d %b %Y')}\n"
+        f"\u23f3 Generating...", token
+    )
 
-        # Cari tanggal dan filter tanggal yang sudah lewat
-        for h,a,r in picks[:6]:
-            d = find_fixture_date(liga, h, a)
-            # Skip tanggal yang sudah lewat
-            if d != "TBD":
+    LIGA_ESPN_LOCAL = {
+        "EPL":"eng.1","Bundesliga":"ger.1","Serie_A":"ita.1",
+        "La_Liga":"esp.1","Ligue_1":"fra.1","Eredivisie":"ned.1",
+        "Liga_Portugal":"por.1","Super_Lig":"tur.1","Belgium":"bel.1",
+        "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
+        "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
+        "Denmark":"den.1",
+    }
+
+    # Kata yang TIDAK boleh dicocokkan secara ambigu
+    BLACKLIST_PAIRS = [
+        ("paris fc", "paris sg"), ("paris fc", "paris saint"),
+        ("estudiantes de merida", "estudiantes caracas"),
+        ("atletico", "athletic"),
+    ]
+
+    def find_model_team(espn_name, model_teams):
+        en = espn_name.lower().strip()
+        # Exact match
+        for t in model_teams:
+            if t.lower() == en:
+                return t
+        # Partial match
+        best, best_score = None, 0
+        for t in model_teams:
+            tn = t.lower()
+            score = sum(1 for w in tn.split() if len(w)>3 and w in en)
+            score += sum(1 for w in en.split() if len(w)>3 and w in tn)
+            if score > best_score:
+                best_score = score
+                best = t
+        return best if best_score >= 2 else None  # min 2 kata cocok
+
+    def is_blacklisted(espn_name, model_name):
+        en = espn_name.lower()
+        mn = model_name.lower()
+        for bl1, bl2 in BLACKLIST_PAIRS:
+            if bl1 in en and bl2 in mn:
+                return True
+            if bl2 in en and bl1 in mn:
+                return True
+        return False
+
+    # Ambil fixtures dan jalankan prediksi
+    sniper_picks = []
+    for liga, slug in LIGA_ESPN_LOCAL.items():
+        try:
+            r = requests.get(
+                f"https://site.api.espn.com/apis/site/v2/sports/soccer/{slug}/scoreboard",
+                headers={"User-Agent":"Mozilla/5.0"}, timeout=8,
+                params={"dates": f"{date_from}-{date_to}"}
+            )
+            if r.status_code != 200:
+                continue
+            DC = v20["dc_params"].get(liga, {})
+            model_teams = list(DC.get("attack", {}).keys())
+            if not model_teams:
+                continue
+            for e in r.json().get("events", []):
+                comps     = e["competitions"][0]["competitors"]
+                espn_home = next(c for c in comps if c["homeAway"]=="home")["team"]["displayName"]
+                espn_away = next(c for c in comps if c["homeAway"]=="away")["team"]["displayName"]
+                raw_date  = e["date"]
+                # Konversi ke WIB
                 try:
-                    fix_date = _dt.date.fromisoformat(d)
-                    if fix_date < today_date:
-                        d = "TBD"  # sudah lewat
-                    # Kalau hari ini, cek jam dari ESPN
-                    elif fix_date == today_date:
-                        # Cari jam dari fixture ESPN
-                        fix_time = _get_fixture_time(liga, h, a)
-                        if fix_time:
-                            fix_dt = _dt.datetime.combine(fix_date, fix_time)
-                            if fix_dt < now_dt:
-                                d = "TBD"  # jam sudah lewat
-                            else:
-                                d = f"{d} {fix_time.strftime('%H:%M')} WIB"
-                        else:
-                            d = d  # tampilkan tanggal saja
+                    utc_dt  = _dt.datetime.strptime(raw_date[:16], "%Y-%m-%dT%H:%M")
+                    wib_dt  = utc_dt + _dt.timedelta(hours=7)
+                    fix_date = raw_date[:10]
+                    fix_time = wib_dt.strftime("%H:%M")
+                    # Skip jika sudah lewat
+                    if _dt.datetime.combine(_dt.date.fromisoformat(fix_date),
+                        _dt.time.fromisoformat(fix_time)) < now_dt:
+                        continue
                 except:
-                    d = "TBD"
-            all_picks.append((d, liga, h, a, r))
+                    fix_date = raw_date[:10]
+                    fix_time = None
 
-    # Urutkan semua picks: tanggal real dulu (ascending), TBD belakang
-    all_picks.sort(key=lambda x: (x[0]=="TBD", x[0]))
+                home_model = find_model_team(espn_home, model_teams)
+                away_model = find_model_team(espn_away, model_teams)
 
-    # Kirim picks diurutkan per tanggal
+                if not home_model or not away_model or home_model == away_model:
+                    continue
+                if is_blacklisted(espn_home, home_model) or is_blacklisted(espn_away, away_model):
+                    continue
+
+                result = predict_match(v20, home_model, away_model, liga)
+                if result and result["tier"] == "SNIPER":
+                    sniper_picks.append({
+                        "date": fix_date,
+                        "time": fix_time,
+                        "liga": liga,
+                        "home": espn_home,
+                        "away": espn_away,
+                        "result": result,
+                    })
+        except Exception as ex:
+            print(f"[Bot] Error {liga}: {ex}")
+
+    # Urutkan berdasarkan tanggal
+    sniper_picks.sort(key=lambda x: (x["date"], x["time"] or "99:99"))
+
+    if not sniper_picks:
+        send(chat_id, "Tidak ada SNIPER picks dalam 30 hari ke depan", token)
+        return
+
+    PRED_LABEL_LOCAL = {"home_win":"MENANG KANDANG","draw":"SERI","away_win":"MENANG TANDANG"}
+    PRED_ICON_LOCAL  = {"home_win":"\U0001f3e0","draw":"\U0001f91d","away_win":"\u2708\ufe0f"}
+
+    # Kirim per tanggal
     current_date = None
     lines = []
-    for d, liga, h, a, r in all_picks[:12]:
-        emoji = LIGA_EMOJI.get(liga,"🏆")
-        name  = LIGA_NAME.get(liga,liga)
+    total = 0
+    for p in sniper_picks:
+        r     = p["result"]
+        emoji = LIGA_EMOJI.get(p["liga"], "\U0001f3c6")
+        name  = LIGA_NAME.get(p["liga"], p["liga"])
         top_sc = " | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
+        date_label = (p["date"] + " " + p["time"] + " WIB") if p["time"] else p["date"]
 
-        # Header tanggal baru
-        if d != current_date:
+        if p["date"] != current_date:
             if lines:
-                send(chat_id,"\n".join(lines),token)
-            current_date = d
-            date_header = f"\n📅 <b>{d}</b>" if d != "TBD" else "\n📅 <b>TBD</b>"
-            lines = [date_header, "─"*22]
+                send(chat_id, "\n".join(lines), token)
+            current_date = p["date"]
+            lines = [f"\n\U0001f4c5 <b>{current_date}</b>\n{'\u2501'*22}"]
 
         lines.append(
             f"\n{emoji} <b>{name}</b>\n"
-            f"🏠 <b>{h}</b> vs ✈️ <b>{a}</b>\n"
-            f"{PRED_ICON[r['pred']]} <b>{PRED_LABEL[r['pred']]}</b> — {r['conf']*100:.1f}%\n"
-            f"  H:{r['ph']*100:.1f}% D:{r['pd']*100:.1f}% A:{r['pa']*100:.1f}%\n"
-            f"⚽ {r['lh']}–{r['la']} | 🎯 {top_sc}\n"
-            f"{'─'*22}"
+            "\U0001f3e0 <b>" + p["home"] + "</b>\n"
+            "\u2708\ufe0f <b>" + p["away"] + "</b>\n"
+            "\u23f0 " + date_label + "\n"
+            + PRED_ICON_LOCAL[r["pred"]] + " <b>" + PRED_LABEL_LOCAL[r["pred"]] + "</b> \u2014 " + f'{r["conf"]*100:.1f}' + "%\n"
+            + "  H:" + f'{r["ph"]*100:.1f}' + "% D:" + f'{r["pd"]*100:.1f}' + "% A:" + f'{r["pa"]*100:.1f}' + "%\n"
+            + "\u26bd " + str(r["lh"]) + "\u2013" + str(r["la"]) + " | \U0001f3af " + top_sc + "\n"
+            f"{'\u2501'*22}"
         )
-        total+=1
+        total += 1
 
     if lines:
-        send(chat_id,"\n".join(lines),token)
+        send(chat_id, "\n".join(lines), token)
+
     send(chat_id,
-        f"━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"✅ Total SNIPER: <b>{total} picks</b>\n"
-        f"<i>Shadow mode — bukan saran finansial</i>",token
+        f"{'\u2501'*22}\n"
+        f"\u2705 Total SNIPER: <b>{total} picks</b>\n"
+        f"\U0001f916 Model V20.4.5 | Dixon-Coles + Elo\n"
+        f"<i>Shadow mode — bukan saran finansial</i>", token
     )
+
 
 def run_bot():
     """Long polling — jalankan di Colab"""
