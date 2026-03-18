@@ -13,14 +13,43 @@ LIGA_ESPN = {
     "Denmark":"den.1","Ukraine":"ukr.1",
 }
 
+ESPN_KEYWORDS = {
+    "nott'm forest":["nottingham"],"spurs":["tottenham"],
+    "newcastle":["newcastle"],"man city":["manchester city"],
+    "man utd":["manchester united"],"wolves":["wolverhampton"],
+    "west ham":["west ham"],"bournemouth":["bournemouth"],
+    "dortmund":["dortmund"],"leverkusen":["leverkusen"],
+    "bayern munich":["bayern"],"rb leipzig":["leipzig"],
+    "m'gladbach":["gladbach"],"gladbach":["gladbach"],
+    "frankfurt":["frankfurt"],"ac milan":["milan"],
+    "inter":["inter"],"atletico":["atletico"],"psg":["paris"],
+    "celtic":["celtic"],"rangers":["rangers"],
+    "olympiakos":["olympiakos"],"paok":["paok"],
+    "flamengo":["flamengo"],"palmeiras":["palmeiras"],
+    "corinthians":["corinthians"],"fluminense":["fluminense"],
+    "ajax":["ajax"],"psv":["psv"],"porto":["porto"],
+    "benfica":["benfica"],"sporting":["sporting cp"],
+    "fenerbahce":["fenerbahce"],"galatasaray":["galatasaray"],
+}
+
 _fixtures_cache = {}
-_fixtures_updated = None
+_fixtures_date  = None
+
+def _get_kw(name):
+    n = name.lower().strip()
+    if n in ESPN_KEYWORDS:
+        return ESPN_KEYWORDS[n]
+    return [w for w in n.split() if len(w) > 3]
+
+def _is_match(model_name, espn_name):
+    en = espn_name.lower()
+    return any(kw in en for kw in _get_kw(model_name))
 
 def _refresh_fixtures():
-    global _fixtures_cache, _fixtures_updated
+    global _fixtures_cache, _fixtures_date
     import datetime as _dt
     today = _dt.date.today()
-    if _fixtures_updated == today and _fixtures_cache:
+    if _fixtures_date == today and _fixtures_cache:
         return
     date_from = today.strftime("%Y%m%d")
     date_to   = (today + _dt.timedelta(days=30)).strftime("%Y%m%d")
@@ -38,25 +67,20 @@ def _refresh_fixtures():
                 comps = e["competitions"][0]["competitors"]
                 home  = next(c for c in comps if c["homeAway"]=="home")["team"]["displayName"]
                 away  = next(c for c in comps if c["homeAway"]=="away")["team"]["displayName"]
-                date  = e["date"][:10]
-                fixes.append({"date": date, "home": home, "away": away})
+                fixes.append({"date": e["date"][:10], "home": home, "away": away})
             _fixtures_cache[liga] = fixes
         except:
             pass
-    _fixtures_updated = today
-    print(f"[Bot] Fixtures refreshed: {sum(len(v) for v in _fixtures_cache.values())} total")
+    _fixtures_date = today
+    print(f"[Bot] Fixtures: {sum(len(v) for v in _fixtures_cache.values())} total")
 
 def find_fixture_date(liga, home_model, away_model):
     _refresh_fixtures()
-    fixes = _fixtures_cache.get(liga, [])
-    home_low = home_model.lower()
-    away_low = away_model.lower()
-    for fix in fixes:
-        fh = fix["home"].lower()
-        fa = fix["away"].lower()
-        h_match = any(w in fh for w in home_low.split() if len(w)>3) or any(w in home_low for w in fh.split() if len(w)>3)
-        a_match = any(w in fa for w in away_low.split() if len(w)>3) or any(w in away_low for w in fa.split() if len(w)>3)
-        if h_match and a_match:
+    for fix in _fixtures_cache.get(liga, []):
+        fh, fa = fix["home"], fix["away"]
+        if _is_match(home_model, fh) and _is_match(away_model, fa):
+            return fix["date"]
+        if _is_match(home_model, fa) and _is_match(away_model, fh):
             return fix["date"]
     return "TBD"
 
