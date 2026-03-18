@@ -8,10 +8,17 @@ from datetime import datetime, timedelta
 MODEL_PATH = "data/model_v20_complete.json"
 
 def _get_token():
-    return os.environ.get("TELEGRAM_TOKEN","")
+    # Railway inject vars saat runtime, bukan build
+    val = os.environ.get("TELEGRAM_TOKEN", "")
+    if not val:
+        print("[Bot] WARNING: TELEGRAM_TOKEN not set")
+    return val
 
 def _get_chat():
-    return os.environ.get("TELEGRAM_CHAT","")
+    val = os.environ.get("TELEGRAM_CHAT", "")
+    if not val:
+        print("[Bot] WARNING: TELEGRAM_CHAT not set")
+    return val
 
 LIGA_EMOJI = {
     "EPL":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Bundesliga":"🇩🇪","Serie_A":"🇮🇹","La_Liga":"🇪🇸",
@@ -310,6 +317,10 @@ def cmd_picks(chat_id, v20, token):
     )
 
 def run_bot():
+    token = _get_token()
+    chat  = _get_chat()
+    print(f"[Bot] Token set: {bool(token)}")
+    print(f"[Bot] Chat set : {bool(chat)}")
     """Long polling — jalankan di Colab"""
     v20 = load_model()
     if not v20:
