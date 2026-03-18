@@ -360,7 +360,11 @@ def cmd_picks(chat_id, v20, token):
         f"📅 {week_start.strftime('%d %b')} – {week_end.strftime('%d %b %Y')}\n"
         f"⏳ Generating...", token
     )
+    import datetime as _dt
+    today_date = _dt.date.today()
     total = 0
+    all_picks = []  # Kumpulkan semua picks dari semua liga
+
     for liga in v20.get("active_leagues",[]):
         DC    = v20["dc_params"].get(liga,{})
         teams = sorted(DC.get("attack",{}).keys())
@@ -377,30 +381,50 @@ def cmd_picks(chat_id, v20, token):
                 if r and r["tier"]=="SNIPER":
                     picks.append((h,a,r))
         if not picks: continue
-        emoji = LIGA_EMOJI.get(liga,"🏆")
-        name  = LIGA_NAME.get(liga,liga)
-        lines = [f"{emoji} <b>{name}</b>\n{'─'*22}"]
-        # Tambah tanggal ke setiap pick lalu urutkan
-        picks_with_date = []
+
+        # Cari tanggal dan filter tanggal yang sudah lewat
         for h,a,r in picks[:6]:
             d = find_fixture_date(liga, h, a)
-            picks_with_date.append((d, h, a, r))
-        # Urutkan: tanggal real dulu, TBD belakang
-        picks_with_date.sort(key=lambda x: (x[0]=="TBD", x[0]))
-        for idx,(match_day,h,a,r) in enumerate(picks_with_date[:2],1):
-            _ = match_day  # sudah diset
-            top_sc    = " | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
-            gap       = r["elo_h"]-r["elo_a"]
-            lines.append(
-                f"\n🔢 Match #{idx}\n"
-                f"🏠 <b>{h}</b>\n✈️ <b>{a}</b>\n"
-                f"📅 {match_day}\n\n"
-                f"{PRED_ICON[r['pred']]} <b>{PRED_LABEL[r['pred']]}</b> — {r['conf']*100:.1f}%\n"
-                f"  Kandang {r['ph']*100:.1f}% | Seri {r['pd']*100:.1f}% | Tandang {r['pa']*100:.1f}%\n"
-                f"⚽ {r['lh']}–{r['la']} | 🎯 {top_sc}\n"
-                f"{'─'*22}"
-            )
-            total+=1
+            # Skip tanggal yang sudah lewat
+            if d != "TBD":
+                try:
+                    fix_date = _dt.date.fromisoformat(d)
+                    if fix_date < today_date:
+                        d = "TBD"
+                except:
+                    d = "TBD"
+            all_picks.append((d, liga, h, a, r))
+
+    # Urutkan semua picks: tanggal real dulu (ascending), TBD belakang
+    all_picks.sort(key=lambda x: (x[0]=="TBD", x[0]))
+
+    # Kirim picks diurutkan per tanggal
+    current_date = None
+    lines = []
+    for d, liga, h, a, r in all_picks[:12]:
+        emoji = LIGA_EMOJI.get(liga,"🏆")
+        name  = LIGA_NAME.get(liga,liga)
+        top_sc = " | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
+
+        # Header tanggal baru
+        if d != current_date:
+            if lines:
+                send(chat_id,"\n".join(lines),token)
+            current_date = d
+            date_header = f"\n📅 <b>{d}</b>" if d != "TBD" else "\n📅 <b>TBD</b>"
+            lines = [date_header, "─"*22]
+
+        lines.append(
+            f"\n{emoji} <b>{name}</b>\n"
+            f"🏠 <b>{h}</b> vs ✈️ <b>{a}</b>\n"
+            f"{PRED_ICON[r['pred']]} <b>{PRED_LABEL[r['pred']]}</b> — {r['conf']*100:.1f}%\n"
+            f"  H:{r['ph']*100:.1f}% D:{r['pd']*100:.1f}% A:{r['pa']*100:.1f}%\n"
+            f"⚽ {r['lh']}–{r['la']} | 🎯 {top_sc}\n"
+            f"{'─'*22}"
+        )
+        total+=1
+
+    if lines:
         send(chat_id,"\n".join(lines),token)
     send(chat_id,
         f"━━━━━━━━━━━━━━━━━━━━━━━\n"
