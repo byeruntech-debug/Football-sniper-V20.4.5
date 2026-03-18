@@ -527,6 +527,19 @@ def load_model():
             with open(p) as f: return json.load(f)
     return None
 
+
+def load_j2_fixtures():
+    """Load J2 fixtures dari cache lokal (tidak pakai ESPN)"""
+    cache_path = "data/fixtures_cache.json"
+    if not os.path.exists(cache_path):
+        return []
+    try:
+        with open(cache_path) as f:
+            cache = json.load(f)
+        return cache.get("J2_League", [])
+    except:
+        return []
+
 def send(chat_id, msg, token=None):
     tk = token or TELEGRAM_TOKEN
     for chunk in [msg[i:i+4000] for i in range(0,len(msg),4000)]:
@@ -1083,6 +1096,42 @@ def cmd_picks(chat_id, v20, token):
                     })
         except Exception as ex:
             print(f"[Bot] Error {liga}: {ex}")
+
+
+    # ── J2 League dari cache lokal ────────────────────────────
+    j2_fixtures = load_j2_fixtures()
+    if j2_fixtures:
+        liga   = "J2_League"
+        DC     = v20["dc_params"].get(liga, {})
+        model_teams = list(DC.get("attack", {}).keys())
+        for fix in j2_fixtures:
+            try:
+                fix_date = fix["date"]
+                fix_time = fix.get("time", "12:00")
+                home_model = fix["home"]
+                away_model = fix["away"]
+                if home_model not in model_teams or away_model not in model_teams:
+                    continue
+                # Skip jika sudah lewat
+                try:
+                    fix_dt = _dt.datetime.strptime(
+                        f"{fix_date} {fix_time}", "%Y-%m-%d %H:%M")
+                    if fix_dt < now_dt:
+                        continue
+                except:
+                    pass
+                result = predict_match(v20, home_model, away_model, liga)
+                if result and result["tier"] == "SNIPER":
+                    sniper_picks.append({
+                        "date"  : fix_date,
+                        "time"  : fix_time,
+                        "liga"  : liga,
+                        "home"  : home_model,
+                        "away"  : away_model,
+                        "result": result,
+                    })
+            except Exception as ex:
+                print(f"[Bot] J2 cache error: {ex}")
 
     # Urutkan berdasarkan tanggal
     sniper_picks.sort(key=lambda x: (x["date"], x["time"] or "99:99"))
