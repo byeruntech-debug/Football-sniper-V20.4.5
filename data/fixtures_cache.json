@@ -2088,5 +2088,494 @@
         "away": "S\u00f8nderjyske Fodbold"
       }
     ]
-  }
+  },
+  "J2_League": [
+    {
+      "date": "2026-03-20",
+      "time": "10:00",
+      "home": "Albirex Niigata",
+      "away": "Kataller Toyama"
+    },
+    {
+      "date": "2026-03-21",
+      "time": "10:00",
+      "home": "SC Sagamihara",
+      "away": "Yokohama FC"
+    },
+    {
+      "date": "2026-03-21",
+      "time": "10:00",
+      "home": "Hokkaido Consadole Sapporo",
+      "away": "Ventforet Kofu"
+    },
+    {
+      "date": "2026-03-21",
+      "time": "10:00",
+      "home": "Jubilo Iwata",
+      "away": "Omiya Ardija"
+    },
+    {
+      "date": "2026-03-21",
+      "time": "10:00",
+      "home": "Oita Trinita",
+      "away": "FC Ryukyu"
+    },
+    {
+      "date": "2026-03-22",
+      "time": "10:00",
+      "home": "Montedio Yamagata",
+      "away": "Vegalta Sendai"
+    },
+    {
+      "date": "2026-03-22",
+      "time": "10:00",
+      "home": "FC Imabari",
+      "away": "Tokushima Vortis"
+    },
+    {
+      "date": "2026-03-22",
+      "time": "10:00",
+      "home": "Renofa Yamaguchi",
+      "away": "Giravanz Kitakyushu"
+    },
+    {
+      "date": "2026-03-28",
+      "time": "10:00",
+      "home": "Thespakusatsu Gunma",
+      "away": "Tochigi SC"
+    },
+    {
+      "date": "2026-03-28",
+      "time": "10:00",
+      "home": "Ventforet Kofu",
+      "away": "Omiya Ardija"
+    },
+    {
+      "date": "2026-03-28",
+      "time": "10:00",
+      "home": "Fujieda MYFC",
+      "away": "Hokkaido Consadole Sapporo"
+    },
+    {
+      "date": "2026-03-29",
+      "time": "09:00",
+      "home": "Roasso Kumamoto",
+      "away": "Kagoshima United"
+    },
+    {
+      "date": "2026-03-29",
+      "time": "10:00",
+      "home": "Blaublitz Akita",
+      "away": "Vegalta Sendai"
+    },
+    {
+      "date": "2026-03-29",
+      "time": "10:00",
+      "home": "Iwaki FC",
+      "away": "Jubilo Iwata"
+    },
+    {
+      "date": "2026-03-29",
+      "time": "10:00",
+      "home": "Kataller Toyama",
+      "away": "FC Imabari"
+    },
+    {
+      "date": "2026-03-29",
+      "time": "10:00",
+      "home": "Renofa Yamaguchi",
+      "away": "Oita Trinita"
+    },
+    {
+      "date": "2026-03-29",
+      "time": "10:00",
+      "home": "Giravanz Kitakyushu",
+      "away": "FC Ryukyu"
+    },
+    {
+      "date": "2026-04-04",
+      "time": "10:00",
+      "home": "Vegalta Sendai",
+      "away": "Thespakusatsu Gunma"
+    },
+    {
+      "date": "2026-04-04",
+      "time": "10:00",
+      "home": "Yokohama FC",
+      "away": "Blaublitz Akita"
+    },
+    {
+      "date": "2026-04-04",
+      "time": "10:00",
+      "home": "Jubilo Iwata",
+      "away": "Ventforet Kofu"
+    },
+    {
+      "date": "2026-04-04",
+      "time": "10:00",
+      "home": "Albirex Niigata",
+      "away": "Toolbox Kanazawa"
+    },
+    {
+      "date": "2026-04-04",
+      "time": "12:00",
+      "home": "FC Ryukyu",
+      "away": "Roasso Kumamoto"
+    },
+    {
+      "date": "2026-04-05",
+      "time": "09:30",
+      "home": "FC Imabari",
+      "away": "Ehime FC"
+    },
+    {
+      "date": "2026-04-05",
+      "time": "10:00",
+      "home": "Matsumoto Yamaga",
+      "away": "Iwaki FC"
+    },
+    {
+      "date": "2026-04-05",
+      "time": "10:00",
+      "home": "Sagan Tosu",
+      "away": "Oita Trinita"
+    },
+    {
+      "date": "2026-04-05",
+      "time": "10:00",
+      "home": "Kagoshima United",
+      "away": "Giravanz Kitakyushu"
+    },
+    {
+      "date": "2026-04-11",
+      "time": "10:00",
+      "home": "Ventforet Kofu",
+      "away": "Hokkaido Consadole Sapporo"
+    },
+    {
+      "date": "2026-04-11",
+      "time": "15:00",
+      "home": "Oita Trinita",
+      "away": "Renofa Yamaguchi"
+    },
+    {
+      "date": "2026-04-12",
+      "time": "10:00",
+      "home": "Montedio Yamagata",
+      "away": "Yokohama FC"
+    },
+    {
+      "date": "2026-04-12",
+      "time": "10:00",
+      "home": "Tochigi SC",
+      "away": "Thespakusatsu Gunma"
+    },
+    {
+      "date": "2026-04-12",
+      "time": "10:00",
+      "home": "SC Sagamihara",
+      "away": "Vegalta Sendai"
+    },
+    {
+      "date": "2026-04-12",
+      "time": "10:00",
+      "home": "Matsumoto Yamaga",
+      "away": "Omiya Ardija"
+    },
+    {
+      "date": "2026-04-12",
+      "time": "10:00",
+      "home": "Toolbox Kanazawa",
+      "away": "FC Imabari"
+    },
+    {
+      "date": "2026-04-12",
+      "time": "10:00",
+      "home": "Giravanz Kitakyushu",
+      "away": "Sagan Tosu"
+    },
+    {
+      "date": "2026-04-18",
+      "time": "09:00",
+      "home": "Hokkaido Consadole Sapporo",
+      "away": "Matsumoto Yamaga"
+    },
+    {
+      "date": "2026-04-18",
+      "time": "09:40",
+      "home": "Renofa Yamaguchi",
+      "away": "Kagoshima United"
+    },
+    {
+      "date": "2026-04-18",
+      "time": "10:00",
+      "home": "Omiya Ardija",
+      "away": "Jubilo Iwata"
+    },
+    {
+      "date": "2026-04-18",
+      "time": "10:00",
+      "home": "Ventforet Kofu",
+      "away": "Fujieda MYFC"
+    },
+    {
+      "date": "2026-04-18",
+      "time": "10:00",
+      "home": "Albirex Niigata",
+      "away": "FC Imabari"
+    },
+    {
+      "date": "2026-04-18",
+      "time": "10:00",
+      "home": "Tokushima Vortis",
+      "away": "Toolbox Kanazawa"
+    },
+    {
+      "date": "2026-04-18",
+      "time": "12:00",
+      "home": "FC Ryukyu",
+      "away": "Giravanz Kitakyushu"
+    },
+    {
+      "date": "2026-04-19",
+      "time": "10:00",
+      "home": "Blaublitz Akita",
+      "away": "Yokohama FC"
+    },
+    {
+      "date": "2026-04-19",
+      "time": "10:00",
+      "home": "Tochigi SC",
+      "away": "SC Sagamihara"
+    },
+    {
+      "date": "2026-04-19",
+      "time": "11:00",
+      "home": "Roasso Kumamoto",
+      "away": "Sagan Tosu"
+    },
+    {
+      "date": "2026-04-25",
+      "time": "10:00",
+      "home": "Vegalta Sendai",
+      "away": "Montedio Yamagata"
+    },
+    {
+      "date": "2026-04-25",
+      "time": "10:00",
+      "home": "Tochigi SC",
+      "away": "Blaublitz Akita"
+    },
+    {
+      "date": "2026-04-25",
+      "time": "10:00",
+      "home": "Thespakusatsu Gunma",
+      "away": "Yokohama FC"
+    },
+    {
+      "date": "2026-04-25",
+      "time": "10:00",
+      "home": "Hokkaido Consadole Sapporo",
+      "away": "Iwaki FC"
+    },
+    {
+      "date": "2026-04-25",
+      "time": "10:00",
+      "home": "FC Imabari",
+      "away": "Kataller Toyama"
+    },
+    {
+      "date": "2026-04-25",
+      "time": "10:00",
+      "home": "Giravanz Kitakyushu",
+      "away": "Renofa Yamaguchi"
+    },
+    {
+      "date": "2026-04-29",
+      "time": "10:00",
+      "home": "Blaublitz Akita",
+      "away": "Montedio Yamagata"
+    },
+    {
+      "date": "2026-04-29",
+      "time": "10:00",
+      "home": "Thespakusatsu Gunma",
+      "away": "Vegalta Sendai"
+    },
+    {
+      "date": "2026-04-29",
+      "time": "10:00",
+      "home": "Hokkaido Consadole Sapporo",
+      "away": "Fujieda MYFC"
+    },
+    {
+      "date": "2026-04-29",
+      "time": "10:00",
+      "home": "Omiya Ardija",
+      "away": "Ventforet Kofu"
+    },
+    {
+      "date": "2026-04-29",
+      "time": "10:00",
+      "home": "Kataller Toyama",
+      "away": "Albirex Niigata"
+    },
+    {
+      "date": "2026-04-29",
+      "time": "10:00",
+      "home": "Renofa Yamaguchi",
+      "away": "FC Ryukyu"
+    },
+    {
+      "date": "2026-04-29",
+      "time": "10:00",
+      "home": "Oita Trinita",
+      "away": "Roasso Kumamoto"
+    },
+    {
+      "date": "2026-04-29",
+      "time": "10:00",
+      "home": "Kagoshima United",
+      "away": "Sagan Tosu"
+    },
+    {
+      "date": "2026-05-02",
+      "time": "10:00",
+      "home": "Vegalta Sendai",
+      "away": "Blaublitz Akita"
+    },
+    {
+      "date": "2026-05-02",
+      "time": "10:00",
+      "home": "Yokohama FC",
+      "away": "SC Sagamihara"
+    },
+    {
+      "date": "2026-05-03",
+      "time": "09:00",
+      "home": "Matsumoto Yamaga",
+      "away": "Ventforet Kofu"
+    },
+    {
+      "date": "2026-05-03",
+      "time": "10:00",
+      "home": "Montedio Yamagata",
+      "away": "Tochigi SC"
+    },
+    {
+      "date": "2026-05-03",
+      "time": "10:00",
+      "home": "Giravanz Kitakyushu",
+      "away": "Oita Trinita"
+    },
+    {
+      "date": "2026-05-03",
+      "time": "10:00",
+      "home": "Toolbox Kanazawa",
+      "away": "Kataller Toyama"
+    },
+    {
+      "date": "2026-05-06",
+      "time": "10:00",
+      "home": "Vegalta Sendai",
+      "away": "Tochigi SC"
+    },
+    {
+      "date": "2026-05-06",
+      "time": "10:00",
+      "home": "Montedio Yamagata",
+      "away": "Thespakusatsu Gunma"
+    },
+    {
+      "date": "2026-05-06",
+      "time": "10:00",
+      "home": "Omiya Ardija",
+      "away": "Iwaki FC"
+    },
+    {
+      "date": "2026-05-06",
+      "time": "10:00",
+      "home": "Ventforet Kofu",
+      "away": "Jubilo Iwata"
+    },
+    {
+      "date": "2026-05-06",
+      "time": "10:00",
+      "home": "Albirex Niigata",
+      "away": "Tokushima Vortis"
+    },
+    {
+      "date": "2026-05-06",
+      "time": "10:00",
+      "home": "Toolbox Kanazawa",
+      "away": "Ehime FC"
+    },
+    {
+      "date": "2026-05-06",
+      "time": "10:00",
+      "home": "Giravanz Kitakyushu",
+      "away": "Roasso Kumamoto"
+    },
+    {
+      "date": "2026-05-06",
+      "time": "10:00",
+      "home": "Kagoshima United",
+      "away": "Oita Trinita"
+    },
+    {
+      "date": "2026-05-09",
+      "time": "10:00",
+      "home": "Hokkaido Consadole Sapporo",
+      "away": "Omiya Ardija"
+    },
+    {
+      "date": "2026-05-09",
+      "time": "10:00",
+      "home": "Iwaki FC",
+      "away": "Ventforet Kofu"
+    },
+    {
+      "date": "2026-05-10",
+      "time": "09:30",
+      "home": "Toolbox Kanazawa",
+      "away": "Albirex Niigata"
+    },
+    {
+      "date": "2026-05-10",
+      "time": "10:00",
+      "home": "Montedio Yamagata",
+      "away": "SC Sagamihara"
+    },
+    {
+      "date": "2026-05-10",
+      "time": "10:00",
+      "home": "Tochigi SC",
+      "away": "Blaublitz Akita"
+    },
+    {
+      "date": "2026-05-10",
+      "time": "10:00",
+      "home": "Matsumoto Yamaga",
+      "away": "Fujieda MYFC"
+    },
+    {
+      "date": "2026-05-10",
+      "time": "10:00",
+      "home": "Roasso Kumamoto",
+      "away": "FC Ryukyu"
+    },
+    {
+      "date": "2026-05-10",
+      "time": "10:00",
+      "home": "Oita Trinita",
+      "away": "Sagan Tosu"
+    },
+    {
+      "date": "2026-05-10",
+      "time": "11:00",
+      "home": "Ehime FC",
+      "away": "Kataller Toyama"
+    }
+  ],
+  "J2_League_updated": "2026-03-18 07:43:06.930359"
 }
