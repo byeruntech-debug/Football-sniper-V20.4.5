@@ -614,6 +614,31 @@ def predict_match(v20, home, away, liga):
     pd=(0.55*dr+0.45*edr)*BOOST
     pa=0.55*aw+0.45*ea*(1-edr)
     t=ph+pd+pa; ph/=t; pd/=t; pa/=t
+    # ── H2H UCL adjustment ───────────────────────────
+    if liga == "UCL":
+        h2h_ucl = v20.get("h2h_ucl", {})
+        _k1 = f"({min(home,away)}, {max(home,away)})"
+        _h2h = h2h_ucl.get(_k1)
+        if _h2h and _h2h.get("meetings", 0) >= 4:
+            dom  = _h2h.get("dominant_team")
+            dom_rate = _h2h.get("dominance", 0.5)
+            dr_h2h   = _h2h.get("draw_rate", 0.25)
+            # H2H signal strength: lebih kuat kalau banyak meetings & dominance jelas
+            n_meet   = min(_h2h["meetings"], 20)
+            h2h_w    = min(0.12, 0.04 * (n_meet / 5) * max(0, dom_rate - 0.5) * 2)
+            if dom and dom_rate > 0.55 and h2h_w > 0.01:
+                if dom == home:
+                    ph = ph * (1 + h2h_w)
+                    pa = pa * (1 - h2h_w * 0.7)
+                elif dom == away:
+                    pa = pa * (1 + h2h_w)
+                    ph = ph * (1 - h2h_w * 0.7)
+                # Draw rate adjustment
+                pd = pd * (1 + (dr_h2h - 0.25) * 0.3)
+                # Renormalize
+                _t = ph + pd + pa
+                ph /= _t; pd /= _t; pa /= _t
+
     conf=max(ph,pd,pa)
     pred=["home_win","draw","away_win"][[ph,pd,pa].index(conf)]
     thr=v20["sniper_threshold"].get(liga,0.65)
