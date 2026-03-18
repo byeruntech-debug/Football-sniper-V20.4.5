@@ -732,6 +732,44 @@ def cmd_picks(chat_id, v20, token):
         "randers fc":               "Randers Fodbold Club",
         "silkeborg if":             "Silkeborg Idrætsforening",
         "viborg ff":                "Viborg Fodsports Forening",
+        # Belgium - explicit mapping
+        "anderlecht":               "Royal Sporting Club Anderlecht",
+        "antwerp":                  "Royal Antwerp Football Club",
+        "cercle brugge ksv":        "Cercle Brugge Koninklijke Sportvereniging",
+        "club brugge":              "Club Brugge Koninklijke Voetbalvereniging",
+        "dender":                   "FC Verbroedering Denderhoutem Denderleeuw Eendracht Hekelgem",
+        "kaa gent":                 "Koninklijke Atletiek Associatie Gent",
+        "kv mechelen":              "Yellow-Red Koninklijke Voetbalclub Mechelen",
+        "kvc westerlo":             "Koninklijke Voetbal Club Westerlo",
+        "oh leuven":                "Oud-Heverlee Leuven",
+        "racing genk":              "Koninklijke Racing Club Genk",
+        "royal charleroi sc":       "Royal Charleroi Sporting Club",
+        "sint-truidense":           "Koninklijke Sint-Truidense Voetbalvereniging",
+        "standard liege":           "Royal Standard Club de Liège",
+        "union st.-gilloise":       "Royale Union Saint-Gilloise",
+        "zulte-waregem":            "Sportvereniging Zulte Waregem",
+        # Scotland - explicit mapping
+        "aberdeen":                 "Aberdeen Football Club",
+        "celtic":                   "The Celtic Football Club",
+        "dundee":                   "Dundee Football Club",
+        "dundee united":            "Dundee United Football Club",
+        "falkirk":                  "Falkirk Football & Athletic Club",
+        "heart of midlothian":      "Heart of Midlothian Football Club",
+        "hibernian":                "Hibernian Football Club",
+        "kilmarnock":               "Kilmarnock Football Club",
+        "livingston":               "Livingston Football Club",
+        "motherwell":               "Motherwell Football Club",
+        "rangers":                  "Rangers Football Club",
+        "st mirren":                "Saint Mirren Football Club",
+        # Super Lig missing
+        "genclerbirligi":           "Genclerbirligi",
+        "kocaelispor":              "Kocaelispor",
+        # Ligue 1 missing - Paris FC tidak ada di model, skip
+        # Denmark missing
+        "fc fredericia":            "Fodbold Club Fredericia",
+        "fc nordsjælland":          "Fodbold Club Nordsjælland",
+        "randers fc":               "Randers Fodbold Club",
+        "silkeborg if":             "Silkeborg Idrætsforening",
     }
 
     def find_model_team(espn_name, model_teams):
