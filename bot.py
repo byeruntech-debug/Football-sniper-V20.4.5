@@ -506,7 +506,7 @@ LIGA_EMOJI = {
     "EPL":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Bundesliga":"🇩🇪","Serie_A":"🇮🇹","La_Liga":"🇪🇸",
     "Ligue_1":"🇫🇷","Eredivisie":"🇳🇱","Liga_Portugal":"🇵🇹","Super_Lig":"🇹🇷",
     "Belgium":"🇧🇪","Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Greece":"🇬🇷","J1_League":"🇯🇵",
-    "Brazil":"🇧🇷","Venezuela":"🇻🇪","Russia":"🇷🇺","Denmark":"🇩🇰","Ukraine":"🇺🇦",,
+    "Brazil":"🇧🇷","Venezuela":"🇻🇪","Russia":"🇷🇺","Denmark":"🇩🇰","Ukraine":"🇺🇦",
     "J2_League":"🇯🇵2️",
 }
 LIGA_NAME = {
@@ -515,7 +515,7 @@ LIGA_NAME = {
     "Liga_Portugal":"Primeira Liga","Super_Lig":"Süper Lig","Belgium":"Pro League",
     "Scotland":"Premiership","Greece":"Super League","J1_League":"J1 League",
     "Brazil":"Série A","Venezuela":"Liga FUTVE","Russia":"Premier Liga",
-    "Denmark":"Superliga","Ukraine":"Premier Liga",,
+    "Denmark":"Superliga","Ukraine":"Premier Liga",
     "J2_League":"J2 League",
 }
 PRED_LABEL = {"home_win":"MENANG KANDANG","draw":"SERI","away_win":"MENANG TANDANG"}
