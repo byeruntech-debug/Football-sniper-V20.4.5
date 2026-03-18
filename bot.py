@@ -619,23 +619,27 @@ def predict_match(v20, home, away, liga):
         h2h_ucl = v20.get("h2h_ucl", {})
         _k1 = f"({min(home,away)}, {max(home,away)})"
         _h2h = h2h_ucl.get(_k1)
-        if _h2h and _h2h.get("meetings", 0) >= 4:
-            dom  = _h2h.get("dominant_team")
-            dom_rate = _h2h.get("dominance", 0.5)
+        # Syarat ketat: min 4 meetings DAN dominance jelas (>0.60) DAN bukan seimbang
+        if (_h2h and
+            _h2h.get("meetings", 0) >= 4 and
+            _h2h.get("dominant_team") is not None and
+            _h2h.get("dominance", 0) >= 0.60):
+            dom      = _h2h["dominant_team"]
+            dom_rate = _h2h["dominance"]
             dr_h2h   = _h2h.get("draw_rate", 0.25)
-            # H2H signal strength: lebih kuat kalau banyak meetings & dominance jelas
-            n_meet   = min(_h2h["meetings"], 20)
-            h2h_w    = min(0.12, 0.04 * (n_meet / 5) * max(0, dom_rate - 0.5) * 2)
-            if dom and dom_rate > 0.55 and h2h_w > 0.01:
+            n_meet   = _h2h["meetings"]
+            # Weight: proporsional meetings (cap 10) dan dominance di atas 0.60
+            meet_factor = min(n_meet, 10) / 10  # 0.2→1.0
+            dom_factor  = (dom_rate - 0.60) / 0.40  # 0→1.0
+            h2h_w = 0.08 * meet_factor * dom_factor  # max 0.08
+            if h2h_w > 0.005:
                 if dom == home:
                     ph = ph * (1 + h2h_w)
-                    pa = pa * (1 - h2h_w * 0.7)
+                    pa = pa * (1 - h2h_w * 0.5)
                 elif dom == away:
                     pa = pa * (1 + h2h_w)
-                    ph = ph * (1 - h2h_w * 0.7)
-                # Draw rate adjustment
-                pd = pd * (1 + (dr_h2h - 0.25) * 0.3)
-                # Renormalize
+                    ph = ph * (1 - h2h_w * 0.5)
+                pd = pd * (1 + (dr_h2h - 0.25) * 0.2)
                 _t = ph + pd + pa
                 ph /= _t; pd /= _t; pa /= _t
 
