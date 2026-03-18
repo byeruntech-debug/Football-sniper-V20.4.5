@@ -83,14 +83,14 @@ def _refresh_fixtures():
                 comps = e["competitions"][0]["competitors"]
                 home  = next(c for c in comps if c["homeAway"]=="home")["team"]["displayName"]
                 away  = next(c for c in comps if c["homeAway"]=="away")["team"]["displayName"]
-                # Simpan jam dalam WIB (UTC+7)
+                # Simpan jam dalam WIB (UTC+7) - tanggal tetap pakai UTC date
                 import datetime as _dt2
                 raw_date = e["date"]  # format: 2026-03-18T13:00Z
                 try:
                     utc_dt = _dt2.datetime.strptime(raw_date[:16], "%Y-%m-%dT%H:%M")
                     wib_dt = utc_dt + _dt2.timedelta(hours=7)
                     fix_time = wib_dt.strftime("%H:%M")
-                    fix_date = wib_dt.strftime("%Y-%m-%d")
+                    fix_date = raw_date[:10]  # pakai tanggal asli UTC
                 except:
                     fix_time = None
                     fix_date = raw_date[:10]
