@@ -238,6 +238,7 @@ LIGA_ESPN = {
     "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
     "Denmark":"den.1","Ukraine":"ukr.1",
     "J2_League":"jpn.2",
+    "UCL":"uefa.champions",
 }
 
 ESPN_KEYWORDS = {
@@ -508,6 +509,7 @@ LIGA_EMOJI = {
     "Belgium":"🇧🇪","Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Greece":"🇬🇷","J1_League":"🇯🇵",
     "Brazil":"🇧🇷","Venezuela":"🇻🇪","Russia":"🇷🇺","Denmark":"🇩🇰","Ukraine":"🇺🇦",
     "J2_League":"🇯🇵2️",
+    "UCL":"🏆",
 }
 LIGA_NAME = {
     "EPL":"Premier League","Bundesliga":"Bundesliga","Serie_A":"Serie A",
@@ -517,6 +519,7 @@ LIGA_NAME = {
     "Brazil":"Série A","Venezuela":"Liga FUTVE","Russia":"Premier Liga",
     "Denmark":"Superliga","Ukraine":"Premier Liga",
     "J2_League":"J2 League",
+    "UCL":"Champions League",
 }
 PRED_LABEL = {"home_win":"MENANG KANDANG","draw":"SERI","away_win":"MENANG TANDANG"}
 PRED_ICON  = {"home_win":"🏠","draw":"🤝","away_win":"✈️"}
@@ -789,6 +792,7 @@ def cmd_picks(chat_id, v20, token):
         "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
         "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
         "Denmark":"den.1",
+        "UCL":"uefa.champions",
     }
 
     # Kata yang TIDAK boleh dicocokkan secara ambigu
@@ -800,6 +804,42 @@ def cmd_picks(chat_id, v20, token):
 
     # Mapping eksplisit ESPN name -> Model name
     ESPN_TO_MODEL = {
+        # UCL
+        "fc barcelona":                 "Barcelona",
+        "real madrid":                  "Real Madrid",
+        "real madrid cf":               "Real Madrid",
+        "fc bayern münchen":            "Bayern Munich",
+        "fc bayern munich":             "Bayern Munich",
+        "paris saint-germain":          "Paris SG",
+        "paris sg":                     "Paris SG",
+        "borussia dortmund":            "Dortmund",
+        "inter milan":                  "Inter",
+        "internazionale":               "Inter",
+        "ac milan":                     "Milan",
+        "atletico de madrid":           "Atletico Madrid",
+        "atlético de madrid":           "Atletico Madrid",
+        "manchester city":              "Man City",
+        "manchester united":            "Man United",
+        "juventus":                     "Juventus",
+        "liverpool":                    "Liverpool",
+        "arsenal":                      "Arsenal",
+        "chelsea":                      "Chelsea",
+        "tottenham hotspur":            "Tottenham",
+        "bayer leverkusen":             "Leverkusen",
+        "rb leipzig":                   "RB Leipzig",
+        "sevilla fc":                   "Sevilla",
+        "fc porto":                     "Futebol Clube do Porto",
+        "sl benfica":                   "Sport Lisboa e Benfica",
+        "sporting cp":                  "Sporting Clube de Portugal",
+        "ajax":                         "Ajax",
+        "psv eindhoven":                "PSV Eindhoven",
+        "feyenoord":                    "Feyenoord",
+        "newcastle united":             "Newcastle",
+        "aston villa":                  "Aston Villa",
+        "club brugge":                  "Club Brugge",
+        "celtic":                       "Celtic",
+        "shakhtar donetsk":             "Shakhtar Donetsk",
+        "red bull salzburg":            "RB Salzburg",
         # EPL
         "afc bournemouth":          "Bournemouth",
         "brighton & hove albion":   "Brighton",
