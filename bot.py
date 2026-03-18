@@ -800,6 +800,8 @@ def cmd_picks(chat_id, v20, token):
         ("paris fc", "paris sg"), ("paris fc", "paris saint"),
         ("estudiantes de merida", "estudiantes caracas"),
         ("atletico", "athletic"),
+        ("sporting cp", "sporting clube de braga"),
+        ("sporting cp", "braga"),
     ]
 
     # Mapping eksplisit ESPN name -> Model name
