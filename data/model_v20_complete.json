@@ -133,7 +133,7 @@
     "total_leagues": 10,
     "brazil_status": "watchlist",
     "brazil_note": "2 musim, n=12, 75% WF. Aktifkan setelah 2025 selesai",
-    "last_updated": "20260318_122841",
+    "last_updated": "20260318_123055",
     "j1_retrain": "20260318_063517 | 5301 laga | 56 tim | WF 57.3% n=131 thr=0.55",
     "j1_j2_retrain": "20260318_064544 | J1: 4495 laga 31tim thr=0.65 acc=57.9% | J2: 2608 laga 37tim thr=0.65 acc=81.2%",
     "j1_2026_update": "20260318_072432 | +58 laga MW1-6 2026 | 3 tim baru: V-Varen Nagasaki, JEF United, Mito HollyHock"
@@ -1931,7 +1931,7 @@
         "Red Star Belgrade": -0.017038,
         "RB Salzburg": -0.017038
       },
-      "hfa": 0.17,
+      "hfa": 0.08,
       "rho": -0.07466240259399046
     }
   },
@@ -53673,6 +53673,11 @@
       "thr_new": 0.68,
       "atk_mean_corrected": 1.369489,
       "fixed_at": "20260318_122841"
+    },
+    "ucl_hfa_v2_20260318_123055": {
+      "fix": "HFA 0.17->0.08 after defense normalization",
+      "reason": "lambda masih terlalu tinggi setelah defense fix",
+      "fixed_at": "20260318_123055"
     }
   },
   "notes": {
