@@ -457,7 +457,7 @@ def _refresh_fixtures():
                 comps = e["competitions"][0]["competitors"]
                 home  = next(c for c in comps if c["homeAway"]=="home")["team"]["displayName"]
                 away  = next(c for c in comps if c["homeAway"]=="away")["team"]["displayName"]
-                # Simpan jam dalam WIB (UTC+7) - tanggal tetap pakai UTC date
+                # Simpan jam dan tanggal dalam WIB (UTC+7)
                 import datetime as _dt2
                 raw_date = e["date"]  # format: 2026-03-18T13:00Z
                 try:
