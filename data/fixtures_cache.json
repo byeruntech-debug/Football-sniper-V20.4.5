@@ -1,0 +1,2092 @@
+{
+  "updated": "2026-03-18",
+  "fixtures": {
+    "EPL": [
+      {
+        "date": "2026-03-20",
+        "home": "AFC Bournemouth",
+        "away": "Manchester United"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Brighton & Hove Albion",
+        "away": "Liverpool"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Fulham",
+        "away": "Burnley"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Manchester City",
+        "away": "Crystal Palace"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Everton",
+        "away": "Chelsea"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Leeds United",
+        "away": "Brentford"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Newcastle United",
+        "away": "Sunderland"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Aston Villa",
+        "away": "West Ham United"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Tottenham Hotspur",
+        "away": "Nottingham Forest"
+      },
+      {
+        "date": "2026-04-10",
+        "home": "West Ham United",
+        "away": "Wolverhampton Wanderers"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Arsenal",
+        "away": "AFC Bournemouth"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Brentford",
+        "away": "Everton"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Burnley",
+        "away": "Brighton & Hove Albion"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Crystal Palace",
+        "away": "Newcastle United"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Nottingham Forest",
+        "away": "Aston Villa"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Liverpool",
+        "away": "Fulham"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Sunderland",
+        "away": "Tottenham Hotspur"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Chelsea",
+        "away": "Manchester City"
+      },
+      {
+        "date": "2026-04-13",
+        "home": "Manchester United",
+        "away": "Leeds United"
+      }
+    ],
+    "Bundesliga": [
+      {
+        "date": "2026-03-20",
+        "home": "RB Leipzig",
+        "away": "TSG Hoffenheim"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "1. FC Heidenheim 1846",
+        "away": "Bayer Leverkusen"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Bayern Munich",
+        "away": "1. FC Union Berlin"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "FC Cologne",
+        "away": "Borussia M\u00f6nchengladbach"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "VfL Wolfsburg",
+        "away": "Werder Bremen"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Borussia Dortmund",
+        "away": "Hamburg SV"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Mainz",
+        "away": "Eintracht Frankfurt"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "St. Pauli",
+        "away": "SC Freiburg"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "FC Augsburg",
+        "away": "VfB Stuttgart"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Bayer Leverkusen",
+        "away": "VfL Wolfsburg"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Borussia M\u00f6nchengladbach",
+        "away": "1. FC Heidenheim 1846"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Hamburg SV",
+        "away": "FC Augsburg"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "SC Freiburg",
+        "away": "Bayern Munich"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "TSG Hoffenheim",
+        "away": "Mainz"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Werder Bremen",
+        "away": "RB Leipzig"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "VfB Stuttgart",
+        "away": "Borussia Dortmund"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "1. FC Union Berlin",
+        "away": "St. Pauli"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Eintracht Frankfurt",
+        "away": "FC Cologne"
+      },
+      {
+        "date": "2026-04-10",
+        "home": "FC Augsburg",
+        "away": "TSG Hoffenheim"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "1. FC Heidenheim 1846",
+        "away": "1. FC Union Berlin"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Borussia Dortmund",
+        "away": "Bayer Leverkusen"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "RB Leipzig",
+        "away": "Borussia M\u00f6nchengladbach"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "VfL Wolfsburg",
+        "away": "Eintracht Frankfurt"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "St. Pauli",
+        "away": "Bayern Munich"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "FC Cologne",
+        "away": "Werder Bremen"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "VfB Stuttgart",
+        "away": "Hamburg SV"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Mainz",
+        "away": "SC Freiburg"
+      },
+      {
+        "date": "2026-04-17",
+        "home": "St. Pauli",
+        "away": "FC Cologne"
+      }
+    ],
+    "Serie_A": [
+      {
+        "date": "2026-03-20",
+        "home": "Cagliari",
+        "away": "Napoli"
+      },
+      {
+        "date": "2026-03-20",
+        "home": "Genoa",
+        "away": "Udinese"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Parma",
+        "away": "Cremonese"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "AC Milan",
+        "away": "Torino"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Juventus",
+        "away": "Sassuolo"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Como",
+        "away": "Pisa"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Atalanta",
+        "away": "Hellas Verona"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Bologna",
+        "away": "Lazio"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "AS Roma",
+        "away": "Lecce"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Fiorentina",
+        "away": "Internazionale"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Lecce",
+        "away": "Atalanta"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Sassuolo",
+        "away": "Cagliari"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Hellas Verona",
+        "away": "Fiorentina"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Lazio",
+        "away": "Parma"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Cremonese",
+        "away": "Bologna"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Pisa",
+        "away": "Torino"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Internazionale",
+        "away": "AS Roma"
+      },
+      {
+        "date": "2026-04-06",
+        "home": "Udinese",
+        "away": "Como"
+      },
+      {
+        "date": "2026-04-06",
+        "home": "Juventus",
+        "away": "Genoa"
+      },
+      {
+        "date": "2026-04-06",
+        "home": "Napoli",
+        "away": "AC Milan"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "AC Milan",
+        "away": "Udinese"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "AS Roma",
+        "away": "Pisa"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Atalanta",
+        "away": "Juventus"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Bologna",
+        "away": "Lecce"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Cagliari",
+        "away": "Cremonese"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Como",
+        "away": "Internazionale"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Fiorentina",
+        "away": "Lazio"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Genoa",
+        "away": "Sassuolo"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Parma",
+        "away": "Napoli"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Torino",
+        "away": "Hellas Verona"
+      }
+    ],
+    "La_Liga": [
+      {
+        "date": "2026-03-20",
+        "home": "Villarreal",
+        "away": "Real Sociedad"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Elche",
+        "away": "Mallorca"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Espanyol",
+        "away": "Getafe"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Levante",
+        "away": "Real Oviedo"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Osasuna",
+        "away": "Girona"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Sevilla",
+        "away": "Valencia"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Barcelona",
+        "away": "Rayo Vallecano"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Celta Vigo",
+        "away": "Alav\u00e9s"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Athletic Club",
+        "away": "Real Betis"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Real Madrid",
+        "away": "Atl\u00e9tico Madrid"
+      },
+      {
+        "date": "2026-04-03",
+        "home": "Rayo Vallecano",
+        "away": "Elche"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Real Sociedad",
+        "away": "Levante"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Mallorca",
+        "away": "Real Madrid"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Alav\u00e9s",
+        "away": "Osasuna"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Atl\u00e9tico Madrid",
+        "away": "Barcelona"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Getafe",
+        "away": "Athletic Club"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Valencia",
+        "away": "Celta Vigo"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Real Oviedo",
+        "away": "Sevilla"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Real Betis",
+        "away": "Espanyol"
+      },
+      {
+        "date": "2026-04-06",
+        "home": "Girona",
+        "away": "Villarreal"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Athletic Club",
+        "away": "Villarreal"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Barcelona",
+        "away": "Espanyol"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Celta Vigo",
+        "away": "Real Oviedo"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Elche",
+        "away": "Valencia"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Levante",
+        "away": "Getafe"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Mallorca",
+        "away": "Rayo Vallecano"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Osasuna",
+        "away": "Real Betis"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Real Madrid",
+        "away": "Girona"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Real Sociedad",
+        "away": "Alav\u00e9s"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Sevilla",
+        "away": "Atl\u00e9tico Madrid"
+      }
+    ],
+    "Ligue_1": [
+      {
+        "date": "2026-03-20",
+        "home": "Lens",
+        "away": "Angers"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Toulouse",
+        "away": "Lorient"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "AJ Auxerre",
+        "away": "Brest"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Nice",
+        "away": "Paris Saint-Germain"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Lyon",
+        "away": "AS Monaco"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Marseille",
+        "away": "Lille"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Paris FC",
+        "away": "Le Havre AC"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Stade Rennais",
+        "away": "Metz"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Nantes",
+        "away": "Strasbourg"
+      },
+      {
+        "date": "2026-04-03",
+        "home": "Paris Saint-Germain",
+        "away": "Toulouse"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Strasbourg",
+        "away": "Nice"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Brest",
+        "away": "Stade Rennais"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Lille",
+        "away": "Lens"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Angers",
+        "away": "Lyon"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Le Havre AC",
+        "away": "AJ Auxerre"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Lorient",
+        "away": "Paris FC"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Metz",
+        "away": "Nantes"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "AS Monaco",
+        "away": "Marseille"
+      },
+      {
+        "date": "2026-04-10",
+        "home": "Paris FC",
+        "away": "AS Monaco"
+      },
+      {
+        "date": "2026-04-10",
+        "home": "Marseille",
+        "away": "Metz"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Lens",
+        "away": "Paris Saint-Germain"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "AJ Auxerre",
+        "away": "Nantes"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Stade Rennais",
+        "away": "Angers"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Brest",
+        "away": "Strasbourg"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Nice",
+        "away": "Le Havre AC"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Toulouse",
+        "away": "Lille"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Lyon",
+        "away": "Lorient"
+      }
+    ],
+    "Eredivisie": [
+      {
+        "date": "2026-03-20",
+        "home": "Heracles Almelo",
+        "away": "Excelsior"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Fortuna Sittard",
+        "away": "FC Twente"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Sparta Rotterdam",
+        "away": "FC Volendam"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "PEC Zwolle",
+        "away": "NAC Breda"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "NEC Nijmegen",
+        "away": "Heerenveen"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "FC Utrecht",
+        "away": "Go Ahead Eagles"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Feyenoord Rotterdam",
+        "away": "Ajax Amsterdam"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "FC Groningen",
+        "away": "AZ Alkmaar"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Telstar",
+        "away": "PSV Eindhoven"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "PSV Eindhoven",
+        "away": "FC Utrecht"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "AZ Alkmaar",
+        "away": "Fortuna Sittard"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Telstar",
+        "away": "FC Groningen"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Ajax Amsterdam",
+        "away": "FC Twente"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Excelsior",
+        "away": "NEC Nijmegen"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Go Ahead Eagles",
+        "away": "PEC Zwolle"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "FC Volendam",
+        "away": "Feyenoord Rotterdam"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Heerenveen",
+        "away": "Heracles Almelo"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "NAC Breda",
+        "away": "Sparta Rotterdam"
+      },
+      {
+        "date": "2026-04-10",
+        "home": "FC Twente",
+        "away": "FC Volendam"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "FC Utrecht",
+        "away": "Telstar"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Sparta Rotterdam",
+        "away": "PSV Eindhoven"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "FC Groningen",
+        "away": "Go Ahead Eagles"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Heracles Almelo",
+        "away": "Ajax Amsterdam"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Fortuna Sittard",
+        "away": "NAC Breda"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "NEC Nijmegen",
+        "away": "Feyenoord Rotterdam"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "PEC Zwolle",
+        "away": "Excelsior"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "AZ Alkmaar",
+        "away": "Heerenveen"
+      }
+    ],
+    "Liga_Portugal": [
+      {
+        "date": "2026-03-20",
+        "home": "Estrela",
+        "away": "Casa Pia"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "FC Famalicao",
+        "away": "C.D. Nacional"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Moreirense",
+        "away": "Arouca"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Benfica",
+        "away": "Vit\u00f3ria de Guimaraes"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Santa Clara",
+        "away": "Gil Vicente"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Tondela",
+        "away": "AVS"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Estoril",
+        "away": "Rio Ave"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Alverca",
+        "away": "Sporting CP"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Braga",
+        "away": "FC Porto"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Arouca",
+        "away": "Estoril"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "C.D. Nacional",
+        "away": "Estrela"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Casa Pia",
+        "away": "Benfica"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "FC Porto",
+        "away": "FC Famalicao"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Gil Vicente",
+        "away": "AVS"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Moreirense",
+        "away": "Braga"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Rio Ave",
+        "away": "Alverca"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Sporting CP",
+        "away": "Santa Clara"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Vit\u00f3ria de Guimaraes",
+        "away": "Tondela"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Alverca",
+        "away": "Casa Pia"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "AVS",
+        "away": "Vit\u00f3ria de Guimaraes"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Benfica",
+        "away": "C.D. Nacional"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Braga",
+        "away": "Arouca"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Estoril",
+        "away": "FC Porto"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Estrela",
+        "away": "Sporting CP"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "FC Famalicao",
+        "away": "Moreirense"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Santa Clara",
+        "away": "Rio Ave"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Tondela",
+        "away": "Gil Vicente"
+      }
+    ],
+    "Super_Lig": [
+      {
+        "date": "2026-03-18",
+        "home": "Alanyaspor",
+        "away": "Kocaelispor"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Eyupspor",
+        "away": "Trabzonspor"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Istanbul Basaksehir",
+        "away": "Antalyaspor"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Caykur Rizespor",
+        "away": "Samsunspor"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Goztepe",
+        "away": "Galatasaray"
+      },
+      {
+        "date": "2026-03-19",
+        "home": "Kayserispor",
+        "away": "Fatih Karag\u00fcmr\u00fck"
+      },
+      {
+        "date": "2026-03-19",
+        "home": "Besiktas",
+        "away": "Kasimpasa"
+      },
+      {
+        "date": "2026-03-19",
+        "home": "Konyaspor",
+        "away": "Genclerbirligi"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Antalyaspor",
+        "away": "Eyupspor"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Fatih Karag\u00fcmr\u00fck",
+        "away": "Caykur Rizespor"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Fenerbahce",
+        "away": "Besiktas"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Gaziantep FK",
+        "away": "Alanyaspor"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Genclerbirligi",
+        "away": "Goztepe"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Kasimpasa",
+        "away": "Kayserispor"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Kocaelispor",
+        "away": "Istanbul Basaksehir"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Samsunspor",
+        "away": "Konyaspor"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Trabzonspor",
+        "away": "Galatasaray"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Alanyaspor",
+        "away": "Trabzonspor"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Besiktas",
+        "away": "Antalyaspor"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Caykur Rizespor",
+        "away": "Gaziantep FK"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Eyupspor",
+        "away": "Samsunspor"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Galatasaray",
+        "away": "Kocaelispor"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Goztepe",
+        "away": "Kasimpasa"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Istanbul Basaksehir",
+        "away": "Genclerbirligi"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Kayserispor",
+        "away": "Fenerbahce"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Konyaspor",
+        "away": "Fatih Karag\u00fcmr\u00fck"
+      }
+    ],
+    "Belgium": [
+      {
+        "date": "2026-03-22",
+        "home": "Anderlecht",
+        "away": "Cercle Brugge KSV"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Club Brugge",
+        "away": "KV Mechelen"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Dender",
+        "away": "KAA Gent"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "OH Leuven",
+        "away": "Antwerp"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "RAAL La Louvi\u00e8re",
+        "away": "Racing Genk"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Sint-Truidense",
+        "away": "Union St.-Gilloise"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Standard Liege",
+        "away": "KVC Westerlo"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Zulte-Waregem",
+        "away": "Royal Charleroi SC"
+      }
+    ],
+    "Scotland": [
+      {
+        "date": "2026-03-21",
+        "home": "Falkirk",
+        "away": "St Mirren"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Heart of Midlothian",
+        "away": "Dundee"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Kilmarnock",
+        "away": "Livingston"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Motherwell",
+        "away": "Hibernian"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Rangers",
+        "away": "Aberdeen"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Dundee United",
+        "away": "Celtic"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Hibernian",
+        "away": "Kilmarnock"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Motherwell",
+        "away": "Falkirk"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Rangers",
+        "away": "Dundee United"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "St Mirren",
+        "away": "Aberdeen"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Livingston",
+        "away": "Heart of Midlothian"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Dundee",
+        "away": "Celtic"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Aberdeen",
+        "away": "Hibernian"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Celtic",
+        "away": "St Mirren"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Dundee United",
+        "away": "Livingston"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Heart of Midlothian",
+        "away": "Motherwell"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Kilmarnock",
+        "away": "Dundee"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Falkirk",
+        "away": "Rangers"
+      }
+    ],
+    "Greece": [
+      {
+        "date": "2026-03-22",
+        "home": "AEK Athens",
+        "away": "Kifisia"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Aris",
+        "away": "OFI Crete"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Asteras Tripoli",
+        "away": "Panathinaikos"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Levadiakos",
+        "away": "Atromitos"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Olympiacos",
+        "away": "Larissa FC"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Panetolikos",
+        "away": "Panserraikos FC"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Volos NFC",
+        "away": "PAOK Salonika"
+      }
+    ],
+    "J1_League": [
+      {
+        "date": "2026-03-18",
+        "home": "Cerezo Osaka",
+        "away": "Fagiano Okayama"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Avispa Fukuoka",
+        "away": "Shimizu S-Pulse"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "JEF United Ichihara-Chiba",
+        "away": "FC Tokyo"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Mito Hollyhock",
+        "away": "Yokohama F. Marinos"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Nagoya Grampus",
+        "away": "Sanfrecce Hiroshima"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Tokyo Verdy 1969",
+        "away": "Kawasaki Frontale"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "V-Varen Nagasaki",
+        "away": "Kyoto Sanga"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Vissel Kobe",
+        "away": "Gamba Osaka"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Machida Zelvia",
+        "away": "Kashima Antlers"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Urawa Red Diamonds",
+        "away": "Kashiwa Reysol"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Fagiano Okayama",
+        "away": "V-Varen Nagasaki"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Avispa Fukuoka",
+        "away": "Gamba Osaka"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Shimizu S-Pulse",
+        "away": "Sanfrecce Hiroshima"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Kyoto Sanga",
+        "away": "Nagoya Grampus"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Tokyo Verdy 1969",
+        "away": "FC Tokyo"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Cerezo Osaka",
+        "away": "Vissel Kobe"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Kashima Antlers",
+        "away": "JEF United Ichihara-Chiba"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Kawasaki Frontale",
+        "away": "Yokohama F. Marinos"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Kashiwa Reysol",
+        "away": "Mito Hollyhock"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Urawa Red Diamonds",
+        "away": "Machida Zelvia"
+      },
+      {
+        "date": "2026-03-27",
+        "home": "Vissel Kobe",
+        "away": "Sanfrecce Hiroshima"
+      },
+      {
+        "date": "2026-03-28",
+        "home": "Machida Zelvia",
+        "away": "Kawasaki Frontale"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Machida Zelvia",
+        "away": "FC Tokyo"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Vissel Kobe",
+        "away": "Shimizu S-Pulse"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "JEF United Ichihara-Chiba",
+        "away": "Tokyo Verdy 1969"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Mito Hollyhock",
+        "away": "Kashima Antlers"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Nagoya Grampus",
+        "away": "Cerezo Osaka"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Gamba Osaka",
+        "away": "Kyoto Sanga"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "V-Varen Nagasaki",
+        "away": "Shimizu S-Pulse"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Fagiano Okayama",
+        "away": "Vissel Kobe"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Kashiwa Reysol",
+        "away": "Yokohama F. Marinos"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Sanfrecce Hiroshima",
+        "away": "Avispa Fukuoka"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "FC Tokyo",
+        "away": "Machida Zelvia"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Kawasaki Frontale",
+        "away": "Urawa Red Diamonds"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "JEF United Ichihara-Chiba",
+        "away": "Mito Hollyhock"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Avispa Fukuoka",
+        "away": "V-Varen Nagasaki"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Machida Zelvia",
+        "away": "Kashiwa Reysol"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Sanfrecce Hiroshima",
+        "away": "Shimizu S-Pulse"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Vissel Kobe",
+        "away": "Nagoya Grampus"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Yokohama F. Marinos",
+        "away": "FC Tokyo"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Gamba Osaka",
+        "away": "Cerezo Osaka"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Kyoto Sanga",
+        "away": "Fagiano Okayama"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Urawa Red Diamonds",
+        "away": "Tokyo Verdy 1969"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Kawasaki Frontale",
+        "away": "Kashima Antlers"
+      }
+    ],
+    "Brazil": [
+      {
+        "date": "2026-03-18",
+        "home": "Bahia",
+        "away": "Red Bull Bragantino"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Palmeiras",
+        "away": "Botafogo"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Athletico-PR",
+        "away": "Cruzeiro"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Atl\u00e9tico-MG",
+        "away": "S\u00e3o Paulo"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Mirassol",
+        "away": "Coritiba"
+      },
+      {
+        "date": "2026-03-19",
+        "home": "Santos",
+        "away": "Internacional"
+      },
+      {
+        "date": "2026-03-19",
+        "home": "Vasco da Gama",
+        "away": "Fluminense"
+      },
+      {
+        "date": "2026-03-19",
+        "home": "Gr\u00eamio",
+        "away": "Vit\u00f3ria"
+      },
+      {
+        "date": "2026-03-19",
+        "home": "Flamengo",
+        "away": "Remo"
+      },
+      {
+        "date": "2026-03-20",
+        "home": "Chapecoense",
+        "away": "Corinthians"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Red Bull Bragantino",
+        "away": "Botafogo"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Fluminense",
+        "away": "Atl\u00e9tico-MG"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "S\u00e3o Paulo",
+        "away": "Palmeiras"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Athletico-PR",
+        "away": "Coritiba"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Cruzeiro",
+        "away": "Santos"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Remo",
+        "away": "Bahia"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Vasco da Gama",
+        "away": "Gr\u00eamio"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Internacional",
+        "away": "Chapecoense"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Vit\u00f3ria",
+        "away": "Mirassol"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Corinthians",
+        "away": "Flamengo"
+      },
+      {
+        "date": "2026-03-29",
+        "home": "Athletico-PR",
+        "away": "Botafogo"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Bahia",
+        "away": "Athletico-PR"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Botafogo",
+        "away": "Mirassol"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Chapecoense",
+        "away": "Atl\u00e9tico-MG"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Coritiba",
+        "away": "Vasco da Gama"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Cruzeiro",
+        "away": "Vit\u00f3ria"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Fluminense",
+        "away": "Corinthians"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Internacional",
+        "away": "S\u00e3o Paulo"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Palmeiras",
+        "away": "Gr\u00eamio"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Red Bull Bragantino",
+        "away": "Flamengo"
+      },
+      {
+        "date": "2026-04-01",
+        "home": "Santos",
+        "away": "Remo"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Atl\u00e9tico-MG",
+        "away": "Athletico-PR"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Bahia",
+        "away": "Palmeiras"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Chapecoense",
+        "away": "Vit\u00f3ria"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Corinthians",
+        "away": "Internacional"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Coritiba",
+        "away": "Fluminense"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Flamengo",
+        "away": "Santos"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Gr\u00eamio",
+        "away": "Remo"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Mirassol",
+        "away": "Red Bull Bragantino"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "S\u00e3o Paulo",
+        "away": "Cruzeiro"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Vasco da Gama",
+        "away": "Botafogo"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Athletico-PR",
+        "away": "Chapecoense"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Botafogo",
+        "away": "Coritiba"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Corinthians",
+        "away": "Palmeiras"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Cruzeiro",
+        "away": "Red Bull Bragantino"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Fluminense",
+        "away": "Flamengo"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Internacional",
+        "away": "Gr\u00eamio"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Mirassol",
+        "away": "Bahia"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Remo",
+        "away": "Vasco da Gama"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Santos",
+        "away": "Atl\u00e9tico-MG"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Vit\u00f3ria",
+        "away": "S\u00e3o Paulo"
+      }
+    ],
+    "Venezuela": [
+      {
+        "date": "2026-03-18",
+        "home": "Deportivo Rayo Zuliano",
+        "away": "Deportivo T\u00e1chira"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Estudiantes de M\u00e9rida",
+        "away": "Carabobo"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Zamora",
+        "away": "Portuguesa"
+      },
+      {
+        "date": "2026-03-18",
+        "home": "Metropolitanos FC",
+        "away": "Monagas SC"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Universidad Central",
+        "away": "Deportivo La Guaira"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Trujillanos",
+        "away": "Zamora"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Deportivo T\u00e1chira",
+        "away": "Estudiantes de M\u00e9rida"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Monagas SC",
+        "away": "Caracas FC"
+      },
+      {
+        "date": "2026-03-23",
+        "home": "Carabobo",
+        "away": "Academia Puerto Cabello"
+      },
+      {
+        "date": "2026-03-23",
+        "home": "Portuguesa",
+        "away": "Deportivo Rayo Zuliano"
+      },
+      {
+        "date": "2026-03-23",
+        "home": "Metropolitanos FC",
+        "away": "Academia Anzo\u00e1tegui"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Academia Anzo\u00e1tegui",
+        "away": "Universidad Central"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Academia Puerto Cabello",
+        "away": "Deportivo T\u00e1chira"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Caracas FC",
+        "away": "Metropolitanos FC"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Deportivo La Guaira",
+        "away": "Carabobo"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Deportivo Rayo Zuliano",
+        "away": "Trujillanos"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Estudiantes de M\u00e9rida",
+        "away": "Portuguesa"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Zamora",
+        "away": "Monagas SC"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Carabobo",
+        "away": "Universidad Central"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Caracas FC",
+        "away": "Academia Anzo\u00e1tegui"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Deportivo T\u00e1chira",
+        "away": "Deportivo La Guaira"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Metropolitanos FC",
+        "away": "Zamora"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Monagas SC",
+        "away": "Deportivo Rayo Zuliano"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Portuguesa",
+        "away": "Academia Puerto Cabello"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Trujillanos",
+        "away": "Estudiantes de M\u00e9rida"
+      }
+    ],
+    "Russia": [
+      {
+        "date": "2026-03-21",
+        "home": "Akhmat Grozny",
+        "away": "Rostov"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "CSKA Moscow",
+        "away": "Dynamo Makhachkala"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "Krasnodar",
+        "away": "Nizhny Novgorod"
+      },
+      {
+        "date": "2026-03-21",
+        "home": "FC Baltika Kaliningrad",
+        "away": "Sochi"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Gazovik Orenburg",
+        "away": "Spartak Moscow"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Dinamo Moscow",
+        "away": "Zenit St Petersburg"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Krylia Sovetov",
+        "away": "Rubin Kazan"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Lokomotiv Moscow",
+        "away": "Akron Tolyatti"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Akron Tolyatti",
+        "away": "CSKA Moscow"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Zenit St Petersburg",
+        "away": "Krylia Sovetov"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Dinamo Moscow",
+        "away": "Gazovik Orenburg"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "Akhmat Grozny",
+        "away": "Krasnodar"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Nizhny Novgorod",
+        "away": "Rostov"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Dynamo Makhachkala",
+        "away": "FC Baltika Kaliningrad"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "Spartak Moscow",
+        "away": "Lokomotiv Moscow"
+      },
+      {
+        "date": "2026-04-06",
+        "home": "Sochi",
+        "away": "Rubin Kazan"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Krylia Sovetov",
+        "away": "Akhmat Grozny"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "Rubin Kazan",
+        "away": "Gazovik Orenburg"
+      },
+      {
+        "date": "2026-04-11",
+        "home": "FC Baltika Kaliningrad",
+        "away": "Nizhny Novgorod"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "CSKA Moscow",
+        "away": "Sochi"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Lokomotiv Moscow",
+        "away": "Dynamo Makhachkala"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Rostov",
+        "away": "Spartak Moscow"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Zenit St Petersburg",
+        "away": "Krasnodar"
+      },
+      {
+        "date": "2026-04-13",
+        "home": "Akron Tolyatti",
+        "away": "Dinamo Moscow"
+      },
+      {
+        "date": "2026-04-17",
+        "home": "Rostov",
+        "away": "Sochi"
+      }
+    ],
+    "Denmark": [
+      {
+        "date": "2026-03-20",
+        "home": "Vejle Boldklub",
+        "away": "Odense Boldklub"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "FC Nordsj\u00e6lland",
+        "away": "S\u00f8nderjyske Fodbold"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Randers FC",
+        "away": "Silkeborg IF"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "F.C. K\u00f8benhavn",
+        "away": "FC Fredericia"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "AGF",
+        "away": "Br\u00f8ndby IF"
+      },
+      {
+        "date": "2026-03-22",
+        "home": "Viborg FF",
+        "away": "FC Midtjylland"
+      },
+      {
+        "date": "2026-04-04",
+        "home": "FC Midtjylland",
+        "away": "S\u00f8nderjyske Fodbold"
+      },
+      {
+        "date": "2026-04-05",
+        "home": "F.C. K\u00f8benhavn",
+        "away": "Silkeborg IF"
+      },
+      {
+        "date": "2026-04-06",
+        "home": "Vejle Boldklub",
+        "away": "Randers FC"
+      },
+      {
+        "date": "2026-04-06",
+        "home": "Odense Boldklub",
+        "away": "FC Fredericia"
+      },
+      {
+        "date": "2026-04-06",
+        "home": "Viborg FF",
+        "away": "AGF"
+      },
+      {
+        "date": "2026-04-07",
+        "home": "FC Nordsj\u00e6lland",
+        "away": "Br\u00f8ndby IF"
+      },
+      {
+        "date": "2026-04-10",
+        "home": "AGF",
+        "away": "FC Nordsj\u00e6lland"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Silkeborg IF",
+        "away": "Odense Boldklub"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "S\u00f8nderjyske Fodbold",
+        "away": "Viborg FF"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Br\u00f8ndby IF",
+        "away": "FC Midtjylland"
+      },
+      {
+        "date": "2026-04-12",
+        "home": "Randers FC",
+        "away": "F.C. K\u00f8benhavn"
+      },
+      {
+        "date": "2026-04-13",
+        "home": "FC Fredericia",
+        "away": "Vejle Boldklub"
+      },
+      {
+        "date": "2026-04-17",
+        "home": "Br\u00f8ndby IF",
+        "away": "S\u00f8nderjyske Fodbold"
+      }
+    ]
+  }
+}
