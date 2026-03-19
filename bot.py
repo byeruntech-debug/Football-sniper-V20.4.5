@@ -877,8 +877,10 @@ def cmd_prediksi(chat_id, v20, token, args):
             f"⚽ Ekspektasi gol : {r['lh']} – {r['la']}\n"
             f"🎯 Skor prediksi  : {top_sc}\n"
             f"📈 Elo: {r['elo_h']} vs {r['elo_a']} (gap {gap:+d})\n"
-            f"━━━━━━━━━━━━━━━━━━━━━━━\n"
-            f"<i>Shadow mode — bukan saran finansial</i>",
+            + (f"⚠️ <i>Draw warning — peluang seri {r['pd']*100:.0f}% "
+               f"(threshold {r['draw_warn_thr']*100:.0f}%)</i>\n" if r.get('draw_warn') else "")
+            + "━━━━━━━━━━━━━━━━━━━━━━━\n"
+            "<i>Shadow mode — bukan saran finansial</i>",
             token
         )
     except Exception as e:
