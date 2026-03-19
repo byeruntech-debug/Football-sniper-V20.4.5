@@ -656,6 +656,45 @@ def predict_match(v20, home, away, liga):
     pred=["home_win","draw","away_win"][[ph,pd,pa].index(conf)]
     thr=v20["sniper_threshold"].get(liga,0.65)
 
+    # ── Platt scaling (probability calibration) ─────
+    platt = v20.get("platt_scalers", {}).get(liga)
+    if platt and "coef" in platt:
+        try:
+            coef      = np.array(platt["coef"])       # (3, 3)
+            intercept = np.array(platt["intercept"])  # (3,)
+            # classes: [0=home_win, 1=draw, 2=away_win]
+            X = np.array([ph, pd, pa])                # (3,)
+            scores = X @ coef.T + intercept           # (3,)
+            # Softmax
+            scores -= scores.max()
+            exp_s = np.exp(scores)
+            probs = exp_s / exp_s.sum()
+            ph, pd, pa = float(probs[0]), float(probs[1]), float(probs[2])
+            # Renormalize (safety)
+            _t = ph + pd + pa
+            ph /= _t; pd /= _t; pa /= _t
+        except:
+            pass  # fallback ke prob tidak ter-kalibrasi
+
+    # ── Giant killer adjustment ──────────────────────
+    gk_data = v20.get("giant_killers", {})
+    if gk_data:
+        elo_diff = rh_ - ra_  # positif = home lebih kuat
+        # Home sebagai giant killer vs tim lebih kuat
+        if home in gk_data and elo_diff < -50:
+            gk_mult = gk_data[home] / 100.0
+            ph = ph * (1 + gk_mult)
+            _t = ph + pd + pa; ph /= _t; pd /= _t; pa /= _t
+        # Away sebagai giant killer vs tim lebih kuat
+        elif away in gk_data and elo_diff > 50:
+            gk_mult = gk_data[away] / 100.0
+            pa = pa * (1 + gk_mult)
+            _t = ph + pd + pa; ph /= _t; pd /= _t; pa /= _t
+
+    # Recalculate conf dan pred setelah giant killer
+    conf = max(ph, pd, pa)
+    pred = ["home_win","draw","away_win"][[ph,pd,pa].index(conf)]
+
     # ── Draw warning flag ─────────────────────────────
     dw_thr = v20.get("draw_warning", {}).get(liga, 0.25)
     draw_warn = pd >= dw_thr and pred != "draw"
