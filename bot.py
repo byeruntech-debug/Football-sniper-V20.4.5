@@ -441,7 +441,7 @@ def _refresh_fixtures():
     if _fixtures_date == today and _fixtures_cache:
         return
     date_from = today.strftime("%Y%m%d")
-    date_to   = (today + _dt.timedelta(days=30)).strftime("%Y%m%d")
+    date_to   = (today + _dt.timedelta(days=60)).strftime("%Y%m%d")
     for liga, slug in LIGA_ESPN.items():
         try:
             r = requests.get(
@@ -925,11 +925,11 @@ def cmd_picks(chat_id, v20, token):
     now_dt    = _dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None) + _dt.timedelta(hours=7)
     today     = now_dt.date()
     date_from = today.strftime("%Y%m%d")
-    date_to   = (today + _dt.timedelta(days=30)).strftime("%Y%m%d")
+    date_to   = (today + _dt.timedelta(days=60)).strftime("%Y%m%d")
 
     send(chat_id,
         f"\U0001f3af <b>SNIPER Picks — 30 Hari ke Depan</b>\n"
-        f"\U0001f4c5 {today.strftime('%d %b %Y')} s/d {(today+_dt.timedelta(days=30)).strftime('%d %b %Y')}\n"
+        f"\U0001f4c5 {today.strftime('%d %b %Y')} s/d {(today+_dt.timedelta(days=60)).strftime('%d %b %Y')}\n"
         f"\u23f3 Generating...", token
     )
 
