@@ -656,6 +656,10 @@ def predict_match(v20, home, away, liga):
     pred=["home_win","draw","away_win"][[ph,pd,pa].index(conf)]
     thr=v20["sniper_threshold"].get(liga,0.65)
 
+    # ── Draw warning flag ─────────────────────────────
+    dw_thr = v20.get("draw_warning", {}).get(liga, 0.25)
+    draw_warn = pd >= dw_thr and pred != "draw"
+
     # ── Adaptive threshold untuk UCL ─────────────────
     if liga == "UCL":
         thr_base = thr  # 0.68
@@ -702,6 +706,7 @@ def predict_match(v20, home, away, liga):
         "ph":round(ph,3),"pd":round(pd,3),"pa":round(pa,3),
         "thr":round(thr,2),"lh":round(lh,2),"la":round(la,2),
         "top_scores":top,"elo_h":rh_,"elo_a":ra_,
+        "draw_warn":draw_warn,"draw_warn_thr":round(dw_thr,3),
     }
 
 def cmd_start(chat_id, v20, token):
