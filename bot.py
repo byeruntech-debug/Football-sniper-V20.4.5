@@ -573,12 +573,22 @@ def send(chat_id, msg, token=None):
         )
 
 def predict_match(v20, home, away, liga):
+    # Guard 1: tim sama → tidak valid
+    if home == away:
+        return None
+
     DC = v20["dc_params"].get(liga,{})
     if not DC:
         return None
     atk,dfn,hfa,rho = DC["attack"],DC["defense"],DC["hfa"],DC["rho"]
 
-    # Fallback untuk tim yang tidak ada di model
+    # Guard 2: untuk liga NON-UCL, kedua tim harus ada di model
+    # UCL punya fallback khusus, liga domestik tidak
+    if liga != "UCL":
+        if home not in atk or away not in atk:
+            return None
+
+    # Fallback untuk tim yang tidak ada di model (UCL only)
     meta      = v20.get("liga_meta",{}).get(liga,{})
     att_fb    = meta.get("att_fallback", 0.0)   # log-scale fallback
     def_fb    = meta.get("def_fallback", 0.0)   # log-scale fallback
@@ -588,7 +598,7 @@ def predict_match(v20, home, away, liga):
     att_away  = atk.get(away, att_fb)
     def_away  = dfn.get(away, def_fb)
 
-    # Jika keduanya tidak dikenal → skip (tidak reliable)
+    # Jika keduanya tidak dikenal → skip (UCL fallback not reliable)
     if home not in atk and away not in atk:
         return None
 
