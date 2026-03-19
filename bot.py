@@ -909,6 +909,8 @@ def cmd_prediksi(chat_id, v20, token, args):
             "<i>Shadow mode — bukan saran finansial</i>",
             token
         )
+        pid = _add_pred(home, away, liga, r["pred"], r["conf"])
+        send(chat_id, f"📝 Tersimpan sebagai <b>#{pid}</b>\nInput hasil: /hasil {pid} skor", token)
     except Exception as e:
         send(chat_id,
             f"⚠️ Format salah\n\n"
