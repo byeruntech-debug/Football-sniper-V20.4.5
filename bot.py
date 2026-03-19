@@ -656,25 +656,10 @@ def predict_match(v20, home, away, liga):
     pred=["home_win","draw","away_win"][[ph,pd,pa].index(conf)]
     thr=v20["sniper_threshold"].get(liga,0.65)
 
-    # ── Platt scaling (probability calibration) ─────
-    platt = v20.get("platt_scalers", {}).get(liga)
-    if platt and "coef" in platt:
-        try:
-            coef      = np.array(platt["coef"])       # (3, 3)
-            intercept = np.array(platt["intercept"])  # (3,)
-            # classes: [0=home_win, 1=draw, 2=away_win]
-            X = np.array([ph, pd, pa])                # (3,)
-            scores = X @ coef.T + intercept           # (3,)
-            # Softmax
-            scores -= scores.max()
-            exp_s = np.exp(scores)
-            probs = exp_s / exp_s.sum()
-            ph, pd, pa = float(probs[0]), float(probs[1]), float(probs[2])
-            # Renormalize (safety)
-            _t = ph + pd + pa
-            ph /= _t; pd /= _t; pa /= _t
-        except:
-            pass  # fallback ke prob tidak ter-kalibrasi
+    # ── Platt scaling — DISABLED (label encoding mismatch) ──
+    # Platt scaler terbukti terbalik: input [0.70,0.20,0.10]
+    # menghasilkan draw=0.75 bukan home_win — disabled sampai di-fix
+    # platt = v20.get("platt_scalers", {}).get(liga)
 
     # ── Giant killer adjustment ──────────────────────
     gk_data = v20.get("giant_killers", {})
