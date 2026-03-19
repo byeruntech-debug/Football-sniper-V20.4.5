@@ -1684,9 +1684,12 @@ def cmd_today(chat_id, v20, token):
             if bl2 in en and bl1 in mn: return True
         return False
 
-    # ── Window: date_from=hari ini, date_to=besok ─────────────
+    # ── Window ESPN: date_from=hari ini, date_to=besok+1 ──────
+    # date_to +2 hari karena pertandingan WIB "besok malam" bisa
+    # berupa UTC "lusa pagi" — ESPN query pakai tanggal UTC, bukan WIB.
+    # Filter ketat now_wib <= wib_dt <= end_wib tetap menjaga window tepat.
     date_from = now_wib.strftime("%Y%m%d")
-    date_to   = (now_wib + _dt.timedelta(days=1)).strftime("%Y%m%d")
+    date_to   = (now_wib + _dt.timedelta(days=2)).strftime("%Y%m%d")
 
     sniper_picks = []
     for liga, slug in LIGA_ESPN_LOCAL.items():
