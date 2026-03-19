@@ -19,6 +19,7 @@ def _load_history():
 def _save_history(h):
     os.makedirs("data", exist_ok=True)
     with open(HISTORY_FILE, "w") as f: _json.dump(h, f, indent=2)
+    _git_push_data("auto: update prediction_history")
 
 def _add_pred(home, away, liga, pred, conf,
               fix_date=None, fix_time=None,
@@ -567,8 +568,55 @@ def _save_notif_store(store):
         os.makedirs("data", exist_ok=True)
         with open(path, "w") as f:
             json.dump(store, f)
+        _git_push_data("auto: update notif_store")
     except:
         pass
+
+def _git_push_data(msg="auto: update data json"):
+    """Push data JSON ke GitHub agar survive Railway redeploy.
+    Non-blocking — bot tetap jalan meski push gagal."""
+    import subprocess as _sp
+    token = os.environ.get("GITHUB_TOKEN", "")
+    if not token:
+        return  # tidak ada token → skip silently
+    try:
+        # Set git identity jika belum ada
+        _sp.run("git config user.email 'bot@railway.app'",
+                shell=True, cwd=".", capture_output=True)
+        _sp.run("git config user.name 'Football Sniper Bot'",
+                shell=True, cwd=".", capture_output=True)
+        # Add hanya file data JSON — tidak menyentuh bot.py atau lainnya
+        _sp.run("git add data/prediction_history.json data/notif_store.json",
+                shell=True, cwd=".", capture_output=True)
+        # Cek apakah ada perubahan
+        r = _sp.run("git diff --cached --quiet",
+                    shell=True, cwd=".", capture_output=True)
+        if r.returncode == 0:
+            return  # tidak ada perubahan → skip
+        _sp.run(f'git commit -m "{msg}"',
+                shell=True, cwd=".", capture_output=True)
+        # Push dengan token via HTTPS
+        remote_url = _sp.run(
+            "git remote get-url origin",
+            shell=True, cwd=".", capture_output=True, text=True
+        ).stdout.strip()
+        # Inject token ke URL: https://TOKEN@github.com/user/repo.git
+        if remote_url.startswith("https://"):
+            auth_url = remote_url.replace(
+                "https://", f"https://{token}@"
+            )
+        else:
+            # SSH remote — konversi ke HTTPS
+            # git@github.com:user/repo.git → https://TOKEN@github.com/user/repo.git
+            auth_url = remote_url.replace(
+                "git@github.com:", f"https://{token}@github.com/"
+            )
+        _sp.run(f"git push {auth_url} main",
+                shell=True, cwd=".", capture_output=True)
+        print("[DataSync] Push data JSON ke GitHub ✅")
+    except Exception as e:
+        print(f"[DataSync] Push gagal (non-fatal): {e}")
+
 
 def send(chat_id, msg, token=None):
     tk = token or TELEGRAM_TOKEN

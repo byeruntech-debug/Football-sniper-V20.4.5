@@ -4,3 +4,5 @@ __pycache__/
 *.log
 outputs/backups/
 .DS_Store
+
+bot_bkp_*.py
