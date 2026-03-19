@@ -20,13 +20,19 @@ def _save_history(h):
     os.makedirs("data", exist_ok=True)
     with open(HISTORY_FILE, "w") as f: _json.dump(h, f, indent=2)
 
-def _add_pred(home, away, liga, pred, conf):
+def _add_pred(home, away, liga, pred, conf,
+              fix_date=None, fix_time=None,
+              espn_home=None, espn_away=None):
     h = _load_history()
     pid = len(h["predictions"]) + 1
     h["predictions"].append({
         "id": pid, "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "home": home, "away": away, "liga": liga,
-        "pred": pred, "conf": round(conf, 4), "result": None, "correct": None
+        "pred": pred, "conf": round(conf, 4), "result": None, "correct": None,
+        "fix_date":  fix_date,   # tanggal WIB — untuk trigger fetch
+        "fix_time":  fix_time,   # jam kick-off WIB "HH:MM" — untuk hitung +150 mnt
+        "espn_home": espn_home,  # ESPN displayName — untuk matching scoreboard
+        "espn_away": espn_away,  # ESPN displayName — untuk matching scoreboard
     })
     h["total"] = len(h["predictions"])
     _save_history(h)
@@ -910,7 +916,14 @@ def cmd_prediksi(chat_id, v20, token, args):
             "<i>Shadow mode — bukan saran finansial</i>",
             token
         )
-        pid = _add_pred(home, away, liga, r["pred"], r["conf"])
+        _refresh_fixtures()
+        fix_date = find_fixture_date(liga, home, away)
+        _ft = _get_fixture_time(liga, home, away)
+        fix_time_str = _ft.strftime("%H:%M") if _ft else None
+        pid = _add_pred(home, away, liga, r["pred"], r["conf"],
+                        fix_date=fix_date if fix_date != "TBD" else None,
+                        fix_time=fix_time_str,
+                        espn_home=home_raw, espn_away=away_raw)
         send(chat_id, f"📝 Tersimpan sebagai <b>#{pid}</b>\nInput hasil: /hasil {pid} skor", token)
     except Exception as e:
         send(chat_id,
@@ -1450,6 +1463,58 @@ def run_bot():
                         "Ketik /help untuk daftar perintah", TELEGRAM_TOKEN
                     )
 
+            # ── Auto-fetch hasil kick_off+150mnt ────────────────────
+            try:
+                new_results = _auto_fetch_results()
+                if new_results:
+                    _daily_results_buffer.extend(new_results)
+            except Exception as afe:
+                print(f"[AutoFetch] Error: {afe}")
+
+            # ── Rangkuman harian jam 23:00 WIB ──────────────────────
+            try:
+                _now_sum   = datetime.utcnow() + timedelta(hours=7)
+                _sum_time  = _now_sum.strftime("%H:%M")
+                _sum_date  = str(_now_sum.date())
+                if (_sum_time >= "23:00" and _sum_time <= "23:05"
+                        and _sum_date != _last_notif_date.get("__summary__")
+                        and _daily_results_buffer):
+                    PRED_L = {"home_win":"MENANG KANDANG","draw":"SERI","away_win":"MENANG TANDANG"}
+                    h_sum  = _load_history()
+                    done   = [x for x in h_sum.get("predictions",[]) if x.get("correct") is not None]
+                    corr   = sum(1 for x in done if x["correct"])
+                    acc    = corr/len(done)*100 if done else 0
+                    for cid_str in list(_notif_store.keys()):
+                        try:
+                            cid   = int(cid_str)
+                            now_d = _now_sum.strftime("%d %b %Y")
+                            lines_msg = [
+                                f"\U0001f4ca <b>Rangkuman Hasil — {now_d}</b>\n"
+                                f"━━━━━━━━━━━━━━━━━━━━━━━"
+                            ]
+                            for u in _daily_results_buffer:
+                                icon = "\u2705" if u["correct"] else "\u274c"
+                                lines_msg.append(
+                                    f"\n{icon} <b>#{u['pid']}</b> "
+                                    f"[{LIGA_EMOJI.get(u['liga'], u['liga'])}]\n"
+                                    f"\U0001f3e0 {u['home']} vs "
+                                    f"\u2708\ufe0f {u['away']}\n"
+                                    f"Skor: <b>{u['skor']}</b> | "
+                                    f"Prediksi: {PRED_L.get(u['pred'], u['pred'])}\n"
+                                    f"{'BENAR \u2705' if u['correct'] else 'SALAH \u274c'}"
+                                )
+                            lines_msg.append(
+                                f"\n━━━━━━━━━━━━━━━━━━━━━━━\n"
+                                f"\U0001f4ca Akurasi total: {corr}/{len(done)} ({acc:.1f}%)"
+                            )
+                            send(cid, "\n".join(lines_msg), TELEGRAM_TOKEN)
+                        except Exception as ne:
+                            print(f"[Summary] Notif error {cid_str}: {ne}")
+                    _daily_results_buffer.clear()
+                    _last_notif_date["__summary__"] = _sum_date
+            except Exception as se:
+                print(f"[Summary] Error: {se}")
+
             # ── Notifikasi harian — cek setiap selesai polling ──────
             try:
                 now_wib  = datetime.utcnow() + timedelta(hours=7)
@@ -1821,6 +1886,129 @@ def cmd_today(chat_id, v20, token):
         f"\U0001f916 Model V20.5.2 | Dixon-Coles + Elo\n"
         f"<i>Shadow mode — bukan saran finansial</i>", token
     )
+
+
+def _auto_fetch_results():
+    """Fetch skor ESPN untuk prediksi yang kick_off + 150 mnt sudah lewat.
+    Return list dict hasil yang berhasil diupdate (buffer untuk rangkuman 23:00)."""
+    import datetime as _dt
+    now_wib = _dt.datetime.utcnow() + _dt.timedelta(hours=7)
+
+    h = _load_history()
+    preds = h.get("predictions", [])
+
+    # Kandidat: result masih None, punya fix_date + fix_time, waktu fetch sudah tiba
+    pending = []
+    for p in preds:
+        if p.get("result") is not None:
+            continue
+        if not p.get("fix_date") or not p.get("fix_time"):
+            continue
+        try:
+            ko_str  = f"{p['fix_date']} {p['fix_time']}"
+            ko_dt   = _dt.datetime.strptime(ko_str, "%Y-%m-%d %H:%M")
+            fetch_dt = ko_dt + _dt.timedelta(minutes=150)  # kick-off + 2.5 jam
+            if now_wib >= fetch_dt:
+                pending.append(p)
+        except:
+            continue
+
+    if not pending:
+        return []
+
+    LIGA_ESPN_LOCAL = {
+        "EPL":"eng.1","Bundesliga":"ger.1","Serie_A":"ita.1",
+        "La_Liga":"esp.1","Ligue_1":"fra.1","Eredivisie":"ned.1",
+        "Liga_Portugal":"por.1","Super_Lig":"tur.1","Belgium":"bel.1",
+        "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
+        "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
+        "Denmark":"den.1","UCL":"uefa.champions",
+    }
+
+    # Grup per liga+tanggal agar fetch minimal
+    from collections import defaultdict
+    by_liga_date = defaultdict(list)
+    for p in pending:
+        by_liga_date[(p["liga"], p["fix_date"])].append(p)
+
+    FINAL_STATUSES = {
+        "STATUS_FULL_TIME", "STATUS_FT", "STATUS_FINAL",
+        "STATUS_FINAL_OT", "STATUS_FINAL_PEN",
+    }
+    updated = []
+
+    for (liga, fix_date), plist in by_liga_date.items():
+        slug = LIGA_ESPN_LOCAL.get(liga)
+        if not slug:
+            continue
+        date_str = fix_date.replace("-", "")
+        try:
+            resp = requests.get(
+                f"https://site.api.espn.com/apis/site/v2/sports/soccer/{slug}/scoreboard",
+                headers={"User-Agent": "Mozilla/5.0"}, timeout=8,
+                params={"dates": date_str}
+            )
+            if resp.status_code != 200:
+                continue
+            events = resp.json().get("events", [])
+        except Exception as ex:
+            print(f"[AutoFetch] ESPN error {liga} {fix_date}: {ex}")
+            continue
+
+        for p in plist:
+            home_q = (p.get("espn_home") or p["home"]).lower()
+            away_q = (p.get("espn_away") or p["away"]).lower()
+            for e in events:
+                comp   = e["competitions"][0]
+                status = comp["status"]["type"]["name"]
+                if status not in FINAL_STATUSES:
+                    continue
+                comps  = comp["competitors"]
+                hc     = next(c for c in comps if c["homeAway"] == "home")
+                ac     = next(c for c in comps if c["homeAway"] == "away")
+                h_name = hc["team"]["displayName"]
+                a_name = ac["team"]["displayName"]
+                # Match: ESPN name atau model name via _is_match
+                home_ok = (home_q in h_name.lower() or
+                           h_name.lower() in home_q or
+                           _is_match(p["home"], h_name))
+                away_ok = (away_q in a_name.lower() or
+                           a_name.lower() in away_q or
+                           _is_match(p["away"], a_name))
+                if not (home_ok and away_ok):
+                    continue
+                try:
+                    hg = int(hc.get("score", -1))
+                    ag = int(ac.get("score", -1))
+                except (ValueError, TypeError):
+                    continue
+                if hg < 0 or ag < 0:
+                    continue
+                skor   = f"{hg}-{ag}"
+                actual = "home_win" if hg > ag else ("away_win" if hg < ag else "draw")
+                p["result"]  = skor
+                p["correct"] = (p["pred"] == actual)
+                updated.append({
+                    "pid":     p["id"],
+                    "liga":    p["liga"],
+                    "home":    h_name,
+                    "away":    a_name,
+                    "skor":    skor,
+                    "pred":    p["pred"],
+                    "correct": p["correct"],
+                })
+                print(f"[AutoFetch] #{p['id']} {p['home']} vs {p['away']} "
+                      f"→ {skor} ({'✅' if p['correct'] else '❌'})")
+                break  # sudah ketemu, lanjut prediksi berikutnya
+
+    if updated:
+        _save_history(h)
+
+    return updated
+
+
+# Buffer hasil harian — dikumpulkan lalu dikirim jam 23:00 WIB
+_daily_results_buffer = []
 
 
 def weekly_report():
