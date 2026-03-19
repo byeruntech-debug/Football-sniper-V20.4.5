@@ -1393,8 +1393,8 @@ def run_bot():
     v20 = load_model()
     if not v20:
         print("❌ Model tidak ditemukan"); return
-    _notif_store = _load_notif_store()  # persistent  # chat_id -> jam WIB
-    _last_notif_date = {}  # track tanggal terakhir kirim
+    _notif_store     = _load_notif_store()  # persistent — chat_id -> jam WIB
+    _last_notif_date = {}                   # chat_id -> date terakhir kirim
     print(f"✅ Bot aktif | {len(v20.get('active_leagues',[]))} liga")
     print("Kirim /start ke bot untuk mulai\nCtrl+C untuk stop\n")
     offset = 0
@@ -1410,9 +1410,9 @@ def run_bot():
                 offset = upd["update_id"]+1
                 msg    = upd.get("message",{})
                 if not msg: continue
-                chat_id = msg["chat"]["id"]
-                text    = msg.get("text","").strip()
-                username= msg.get("from",{}).get("username","?")
+                chat_id  = msg["chat"]["id"]
+                text     = msg.get("text","").strip()
+                username = msg.get("from",{}).get("username","?")
                 print(f"[{datetime.now().strftime('%H:%M')}] @{username}: {text}")
                 if   text.startswith("/start") or text.startswith("/help"):
                     cmd_start(chat_id, v20, TELEGRAM_TOKEN)
@@ -1438,11 +1438,38 @@ def run_bot():
                     cmd_hasil(chat_id, TELEGRAM_TOKEN, text[6:].strip())
                 elif text.startswith("/notif"):
                     cmd_notif_set(chat_id, TELEGRAM_TOKEN, text[6:].strip(), _notif_store)
+                    _save_notif_store(_notif_store)
                 else:
                     send(chat_id,
                         "❓ Perintah tidak dikenal\n\n"
                         "Ketik /help untuk daftar perintah", TELEGRAM_TOKEN
                     )
+
+            # ── Notifikasi harian — cek setiap selesai polling ──────
+            try:
+                now_wib  = datetime.utcnow() + timedelta(hours=7)
+                now_time = now_wib.strftime("%H:%M")
+                now_date = now_wib.date()
+                for cid_str, jam in list(_notif_store.items()):
+                    cid = int(cid_str)
+                    # Kirim jika: jam cocok (toleransi 1 menit) DAN belum kirim hari ini
+                    if (now_time == jam or
+                        (abs(int(now_time.replace(":","")) -
+                             int(jam.replace(":",""))
+                        ) <= 1)):
+                        last = _last_notif_date.get(cid_str)
+                        if last != str(now_date):
+                            print(f"[Notif] Kirim picks ke {cid_str} jam {jam}")
+                            send(cid,
+                                f"⏰ <b>Notifikasi Harian — {now_wib.strftime('%d %b %Y')}</b>\n"
+                                f"Berikut SNIPER picks untuk hari ini:",
+                                TELEGRAM_TOKEN
+                            )
+                            cmd_picks(cid, v20, TELEGRAM_TOKEN)
+                            _last_notif_date[cid_str] = str(now_date)
+            except Exception as ne:
+                print(f"[Notif] Error: {ne}")
+
         except KeyboardInterrupt:
             print("\n⏹ Bot dihentikan")
             break
