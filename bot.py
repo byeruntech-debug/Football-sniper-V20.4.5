@@ -745,6 +745,7 @@ def cmd_start(chat_id, v20, token):
         f"Akurasi WF: 87.4% | {n_liga} liga | {n_teams} tim\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
         f"📋 <b>PERINTAH TERSEDIA:</b>\n\n"
+        f"/today — SNIPER picks hari ini & besok\n"
         f"/picks — SNIPER picks pekan ini\n"
         f"/form [tim] [liga] — form tim\n"
         f"/h2h [tim1] vs [tim2] — head to head\n"
@@ -1438,6 +1439,8 @@ def run_bot():
                     cmd_akurasi(chat_id, TELEGRAM_TOKEN)
                 elif text.startswith("/hasil"):
                     cmd_hasil(chat_id, TELEGRAM_TOKEN, text[6:].strip())
+                elif text.startswith("/today"):
+                    cmd_today(chat_id, v20, TELEGRAM_TOKEN)
                 elif text.startswith("/notif"):
                     cmd_notif_set(chat_id, TELEGRAM_TOKEN, text[6:].strip(), _notif_store)
                     _save_notif_store(_notif_store)
@@ -1480,6 +1483,343 @@ def run_bot():
             time.sleep(5)
 
 # Weekly picks (dipanggil GitHub Actions)
+def cmd_today(chat_id, v20, token):
+    """SNIPER picks hari ini (sekarang WIB) hingga besok 23:59 WIB"""
+    import datetime as _dt
+    now_wib  = _dt.datetime.utcnow() + _dt.timedelta(hours=7)
+    end_wib  = (now_wib + _dt.timedelta(days=1)).replace(
+                    hour=23, minute=59, second=59, microsecond=0)
+    today    = now_wib.date()
+
+    send(chat_id,
+        f"\U0001f3af <b>SNIPER Picks — Hari Ini &amp; Besok</b>\n"
+        f"\U0001f4c5 {now_wib.strftime('%d %b %Y %H:%M')} s/d "
+        f"{end_wib.strftime('%d %b %Y %H:%M')} WIB\n"
+        f"\u23f3 Generating...", token
+    )
+
+    LIGA_ESPN_LOCAL = {
+        "EPL":"eng.1","Bundesliga":"ger.1","Serie_A":"ita.1",
+        "La_Liga":"esp.1","Ligue_1":"fra.1","Eredivisie":"ned.1",
+        "Liga_Portugal":"por.1","Super_Lig":"tur.1","Belgium":"bel.1",
+        "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
+        "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
+        "Denmark":"den.1",
+        "UCL":"uefa.champions",
+    }
+
+    BLACKLIST_PAIRS = [
+        ("paris fc", "paris sg"), ("paris fc", "paris saint"),
+        ("estudiantes de merida", "estudiantes caracas"),
+        ("atletico", "athletic"),
+        ("sporting cp", "sporting clube de braga"),
+        ("sporting cp", "braga"),
+    ]
+
+    ESPN_TO_MODEL = {
+        "fc barcelona":"Barcelona","barcelona":"Barcelona",
+        "atlético madrid":"Atletico Madrid","atletico madrid":"Atletico Madrid",
+        "atletico de madrid":"Atletico Madrid","atlético de madrid":"Atletico Madrid",
+        "galatasaray":"Galatasaray","galatasaray sk":"Galatasaray",
+        "atalanta":"Atalanta","atalanta bc":"Atalanta",
+        "rb salzburg":"RB Salzburg","red bull salzburg":"RB Salzburg",
+        "monaco":"Monaco","as monaco":"Monaco",
+        "benfica":"Sport Lisboa e Benfica","sl benfica":"Sport Lisboa e Benfica",
+        "girona":"Girona","girona fc":"Girona",
+        "brest":"Brest","stade brestois 29":"Brest",
+        "bologna":"Bologna","bologna fc":"Bologna",
+        "lille":"LOSC Lille","losc lille":"LOSC Lille",
+        "villarreal":"Villarreal","villarreal cf":"Villarreal",
+        "sturm graz":"Sturm Graz","slovan bratislava":"Slovan Bratislava",
+        "young boys":"Young Boys","bsc young boys":"Young Boys",
+        "dinamo zagreb":"Dinamo Zagreb","gnk dinamo":"GNK Dinamo",
+        "shakhtar donetsk":"Shakhtar Donetsk",
+        "red star belgrade":"Red Star Belgrade","crvena zvezda":"Red Star Belgrade",
+        "real madrid":"Real Madrid","real madrid cf":"Real Madrid",
+        "fc bayern münchen":"Bayern Munich","fc bayern munich":"Bayern Munich",
+        "paris saint-germain":"Paris SG","paris sg":"Paris SG","psg":"Paris SG",
+        "borussia dortmund":"Dortmund","internazionale":"Inter","inter milan":"Inter",
+        "manchester city":"Man City","manchester united":"Man United",
+        "juventus":"Juventus","liverpool":"Liverpool","arsenal":"Arsenal",
+        "chelsea":"Chelsea","tottenham hotspur":"Tottenham",
+        "bayer leverkusen":"Leverkusen","rb leipzig":"RB Leipzig",
+        "sevilla fc":"Sevilla","fc porto":"Futebol Clube do Porto",
+        "sporting cp":"Sporting Clube de Portugal","ajax":"Ajax",
+        "psv eindhoven":"PSV Eindhoven","feyenoord":"Feyenoord",
+        "newcastle united":"Newcastle","aston villa":"Aston Villa",
+        "club brugge":"Club Brugge","celtic":"Celtic",
+        "afc bournemouth":"Bournemouth","brighton & hove albion":"Brighton",
+        "nottingham forest":"Nott'm Forest","west ham united":"West Ham",
+        "wolverhampton wanderers":"Wolves","leeds united":"Leeds",
+        "borussia monchengladbach":"M'gladbach","borussia mönchengladbach":"M'gladbach",
+        "eintracht frankfurt":"Ein Frankfurt","fc augsburg":"Augsburg",
+        "fc cologne":"FC Koln","hamburg sv":"Hamburg",
+        "1. fc heidenheim 1846":"Heidenheim","1. fc union berlin":"Union Berlin",
+        "sc freiburg":"Freiburg","st. pauli":"St Pauli",
+        "tsg hoffenheim":"Hoffenheim","vfb stuttgart":"Stuttgart","vfl wolfsburg":"Wolfsburg",
+        "ac milan":"Milan","as roma":"Roma","hellas verona":"Verona",
+        "athletic club":"Ath Bilbao","alavés":"Alaves","alaves":"Alaves",
+        "celta vigo":"Celta","espanyol":"Espanol","rayo vallecano":"Vallecano",
+        "real betis":"Betis","real oviedo":"Oviedo","real sociedad":"Sociedad",
+        "stade rennais":"Rennes","aj auxerre":"Auxerre","le havre ac":"Le Havre",
+        "paris fc":"Paris FC",
+        "ajax amsterdam":"Ajax","fc groningen":"Groningen","fc twente":"Twente",
+        "fc utrecht":"Utrecht","fc volendam":"Volendam",
+        "feyenoord rotterdam":"Feyenoord","fortuna sittard":"For Sittard",
+        "heracles almelo":"Heracles","nec nijmegen":"Nijmegen","pec zwolle":"Zwolle",
+        "braga":"Sporting Clube de Braga",
+        "fc famalicao":"Futebol Clube de Famalicão",
+        "vitória de guimaraes":"Vitória Sport Clube",
+        "estoril":"Grupo Desportivo Estoril Praia",
+        "estrela":"Club Football Estrela da Amadora",
+        "arouca":"Futebol Clube de Arouca",
+        "casa pia":"Casa Pia Atlético Clube","alverca":"Futebol Clube de Alverca",
+        "rio ave":"Rio Ave Futebol Clube","santa clara":"Clube Desportivo Santa Clara",
+        "moreirense":"Moreirense Futebol Clube","avs":"AVS Futebol SAD",
+        "gil vicente":"Gil Vicente Futebol Clube","tondela":"Clube Desportivo de Tondela",
+        "c.d. nacional":"Clube Desportivo Nacional",
+        "goztepe":"Goztep","istanbul basaksehir":"Buyuksehyr",
+        "fatih karagümrük":"Karagumruk","fatih karagumruk":"Karagumruk",
+        "caykur rizespor":"Rizespor","gaziantep fk":"Gaziantep",
+        "kocaelispor":"Kocaelispor Kulübü","genclerbirligi":"Gençlerbirliği Spor Kulübü",
+        "anderlecht":"Royal Sporting Club Anderlecht",
+        "antwerp":"Royal Antwerp Football Club",
+        "cercle brugge ksv":"Cercle Brugge Koninklijke Sportvereniging",
+        "club brugge kv":"Club Brugge Koninklijke Voetbalvereniging",
+        "dender":"FC Verbroedering Denderhoutem Denderleeuw Eendracht Hekelgem",
+        "kaa gent":"Koninklijke Atletiek Associatie Gent",
+        "kv mechelen":"Yellow-Red Koninklijke Voetbalclub Mechelen",
+        "kvc westerlo":"Koninklijke Voetbal Club Westerlo",
+        "oh leuven":"Oud-Heverlee Leuven","racing genk":"Koninklijke Racing Club Genk",
+        "royal charleroi sc":"Royal Charleroi Sporting Club",
+        "sint-truidense":"Koninklijke Sint-Truidense Voetbalvereniging",
+        "standard liege":"Royal Standard Club de Liège",
+        "union st.-gilloise":"Royale Union Saint-Gilloise",
+        "zulte-waregem":"Sportvereniging Zulte Waregem",
+        "aberdeen":"Aberdeen Football Club","celtic fc":"The Celtic Football Club",
+        "rangers":"Rangers Football Club",
+        "heart of midlothian":"Heart of Midlothian Football Club",
+        "hibernian":"Hibernian Football Club","kilmarnock":"Kilmarnock Football Club",
+        "livingston":"Livingston Football Club","motherwell":"Motherwell Football Club",
+        "dundee":"Dundee Football Club","dundee united":"Dundee United Football Club",
+        "falkirk":"Falkirk Football & Athletic Club",
+        "st mirren":"Saint Mirren Football Club",
+        "olympiacos":"Olympiakos Syndesmos Filathlon Peiraios",
+        "aek athens":"Athlitiki Enosi Konstantinoupoleos",
+        "paok salonika":"Panthessalonikios Athlitikos Omilos Konstantinoupoliton",
+        "panathinaikos":"Panathinaikos Athlitikos Omilos",
+        "aris":"Aris Thessalonikis","atromitos":"APS Atromitos Athinon",
+        "levadiakos":"APO Levadiakos Football Club",
+        "ofi crete":"Omilos Filathlon Irakliou FC",
+        "volos nfc":"Volou Neos Podosferikos Syllogos",
+        "kifisia":"Athlitiki Enosi Kifisias","asteras tripoli":"A.G.S Asteras Tripolis",
+        "panserraikos fc":"Panserraikos Serres","larissa fc":"Athlitiki Enosi Larisas",
+        "panetolikos":"Panetolikos Agrinio",
+        "tokyo verdy 1969":"Verdy","kyoto sanga":"Kyoto",
+        "urawa red diamonds":"Urawa Reds",
+        "jef united ichihara-chiba":"JEF United","mito hollyhock":"Mito HollyHock",
+        "hokkaido consadole sapporo":"Sapporo",
+        "machida zelvia":"Machida Zelvia","fagiano okayama":"Fagiano Okayama",
+        "jef united":"JEF United","jef united ichihara chiba":"JEF United",
+        "ventforet kofu":"Ventforet Kofu","albirex niigata":"Albirex Niigata",
+        "roasso kumamoto":"Roasso Kumamoto","blaublitz akita":"Blaublitz Akita",
+        "grulla morioka":"Grulla Morioka","renofa yamaguchi":"Renofa Yamaguchi",
+        "tochigi sc":"Tochigi SC","thespakusatsu gunma":"Thespakusatsu Gunma",
+        "giravanz kitakyushu":"Giravanz Kitakyushu","fc ryukyu":"FC Ryukyu",
+        "ehime fc":"Ehime FC","jubilo iwata":"Jubilo Iwata",
+        "kataller toyama":"Kataller Toyama","iwaki fc":"Iwaki FC",
+        "fc imabari":"FC Imabari","fujieda myfc":"Fujieda MYFC",
+        "kagoshima united":"Kagoshima United","sc sagamihara":"SC Sagamihara",
+        "toolbox kanazawa":"Toolbox Kanazawa","montedio yamagata":"Montedio Yamagata",
+        "omiya ardija":"Omiya Ardija",
+        "red bull bragantino":"RB Bragantino","vasco da gama":"Vasco",
+        "remo":"Clube do Remo","clube do remo":"Clube do Remo",
+        "academia anzoátegui":"Dep. Anzoátegui",
+        "academia puerto cabello":"Puerto Cabello","caracas fc":"Caracas",
+        "deportivo la guaira":"La Guaira","deportivo rayo zuliano":"Rayo Zuliano",
+        "deportivo táchira":"Dep. Táchira","estudiantes de mérida":"Estudiantes M.",
+        "metropolitanos fc":"Metropolitanos","monagas sc":"Monagas",
+        "akhmat grozny":"RFK Akhmat Grozny","akron tolyatti":"Akron Togliatti",
+        "cska moscow":"PFK CSKA Moskva","dinamo moscow":"FK Dinamo Moskva",
+        "dynamo makhachkala":"Dinamo Makhachkala",
+        "fc baltika kaliningrad":"FK Baltika","gazovik orenburg":"FC Orenburg",
+        "krasnodar":"FK Krasnodar","krylia sovetov":"PFK Krylya Sovetov Samara",
+        "lokomotiv moscow":"Футбольный клуб \"Локомотив\" Москва",
+        "nizhny novgorod":"FK Nizhny Novgorod","rostov":"FK Rostov",
+        "rubin kazan":"FC Rubin Kazan","sochi":"FK Sochi",
+        "spartak moscow":"FK Spartak Moskva",
+        "zenit st petersburg":"AO FK Zenit Sankt-Peterburg",
+        "agf":"Aarhus Gymnastik Forening","brøndby if":"Brøndby Idrætsforening",
+        "f.c. københavn":"Football Club København",
+        "fc fredericia":"Fodbold Club Fredericia",
+        "fc midtjylland":"Fodbold Club Midtjylland",
+        "fc nordsjælland":"Fodbold Club Nordsjælland",
+        "randers fc":"Randers Fodbold Club","silkeborg if":"Silkeborg Idrætsforening",
+        "viborg ff":"Viborg Fodsports Forening",
+    }
+
+    def find_model_team(espn_name, model_teams):
+        en = espn_name.lower().strip()
+        if en in ESPN_TO_MODEL:
+            mapped = ESPN_TO_MODEL[en]
+            if mapped in model_teams:
+                return mapped
+        for t in model_teams:
+            if t.lower() == en:
+                return t
+        best, best_score = None, 0
+        for t in model_teams:
+            tn = t.lower()
+            score = sum(1 for w in tn.split() if len(w)>3 and w in en)
+            score += sum(1 for w in en.split() if len(w)>3 and w in tn)
+            if score > best_score:
+                best_score = score
+                best = t
+        return best if best_score >= 2 else None
+
+    def is_blacklisted(espn_name, model_name):
+        en = espn_name.lower(); mn = model_name.lower()
+        for bl1, bl2 in BLACKLIST_PAIRS:
+            if bl1 in en and bl2 in mn: return True
+            if bl2 in en and bl1 in mn: return True
+        return False
+
+    # ── Window: date_from=hari ini, date_to=besok ─────────────
+    date_from = now_wib.strftime("%Y%m%d")
+    date_to   = (now_wib + _dt.timedelta(days=1)).strftime("%Y%m%d")
+
+    sniper_picks = []
+    for liga, slug in LIGA_ESPN_LOCAL.items():
+        try:
+            r = requests.get(
+                f"https://site.api.espn.com/apis/site/v2/sports/soccer/{slug}/scoreboard",
+                headers={"User-Agent":"Mozilla/5.0"}, timeout=8,
+                params={"dates": f"{date_from}-{date_to}"}
+            )
+            if r.status_code != 200:
+                continue
+            DC = v20["dc_params"].get(liga, {})
+            model_teams = list(DC.get("attack", {}).keys())
+            if not model_teams:
+                continue
+            for e in r.json().get("events", []):
+                comps     = e["competitions"][0]["competitors"]
+                espn_home = next(c for c in comps if c["homeAway"]=="home")["team"]["displayName"]
+                espn_away = next(c for c in comps if c["homeAway"]=="away")["team"]["displayName"]
+                raw_date  = e["date"]
+                try:
+                    utc_dt   = _dt.datetime.strptime(raw_date[:16], "%Y-%m-%dT%H:%M")
+                    wib_dt   = utc_dt + _dt.timedelta(hours=7)
+                    fix_date = wib_dt.strftime("%Y-%m-%d")
+                    fix_time = wib_dt.strftime("%H:%M")
+                    # ── Filter window ketat WIB ──────────────
+                    if wib_dt < now_wib:
+                        continue   # sudah lewat atau kurang dari sekarang
+                    if wib_dt > end_wib:
+                        continue   # lewat batas besok 23:59
+                except:
+                    fix_date = raw_date[:10]
+                    fix_time = None
+
+                home_model = find_model_team(espn_home, model_teams)
+                away_model = find_model_team(espn_away, model_teams)
+                if not home_model or not away_model or home_model == away_model:
+                    continue
+                if is_blacklisted(espn_home, home_model) or is_blacklisted(espn_away, away_model):
+                    continue
+                result = predict_match(v20, home_model, away_model, liga)
+                if result and result["tier"] == "SNIPER":
+                    sniper_picks.append({
+                        "date": fix_date, "time": fix_time,
+                        "liga": liga, "home": espn_home, "away": espn_away,
+                        "result": result,
+                    })
+        except Exception as ex:
+            print(f"[Today] Error {liga}: {ex}")
+
+    # ── J2 dari cache lokal ───────────────────────────────────
+    j2_fixtures = load_j2_fixtures()
+    if j2_fixtures:
+        liga = "J2_League"
+        DC   = v20["dc_params"].get(liga, {})
+        model_teams = list(DC.get("attack", {}).keys())
+        for fix in j2_fixtures:
+            try:
+                fix_date  = fix["date"]
+                fix_time  = fix.get("time", "12:00")
+                home_model = fix["home"]
+                away_model = fix["away"]
+                if home_model not in model_teams or away_model not in model_teams:
+                    continue
+                try:
+                    fix_dt = _dt.datetime.strptime(f"{fix_date} {fix_time}", "%Y-%m-%d %H:%M")
+                    if fix_dt < now_wib or fix_dt > end_wib:
+                        continue
+                except:
+                    pass
+                result = predict_match(v20, home_model, away_model, liga)
+                if result and result["tier"] == "SNIPER":
+                    sniper_picks.append({
+                        "date": fix_date, "time": fix_time,
+                        "liga": liga, "home": home_model, "away": away_model,
+                        "result": result,
+                    })
+            except Exception as ex:
+                print(f"[Today] J2 error: {ex}")
+
+    sniper_picks.sort(key=lambda x: (x["date"], x["time"] or "99:99"))
+
+    if not sniper_picks:
+        send(chat_id,
+            f"\U0001f4ed Tidak ada SNIPER picks\n"
+            f"{now_wib.strftime('%d %b %Y %H:%M')} s/d "
+            f"{end_wib.strftime('%d %b %Y %H:%M')} WIB", token)
+        return
+
+    PRED_LABEL_LOCAL = {"home_win":"MENANG KANDANG","draw":"SERI","away_win":"MENANG TANDANG"}
+    PRED_ICON_LOCAL  = {"home_win":"\U0001f3e0","draw":"\U0001f91d","away_win":"\u2708\ufe0f"}
+
+    current_date = None
+    lines = []
+    total = 0
+    for p in sniper_picks:
+        r     = p["result"]
+        emoji = LIGA_EMOJI.get(p["liga"], "\U0001f3c6")
+        name  = LIGA_NAME.get(p["liga"], p["liga"])
+        top_sc = " | ".join([f"{s[0]}-{s[1]}({s[2]*100:.0f}%)" for s in r["top_scores"][:2]])
+        date_label = (p["date"] + " " + p["time"] + " WIB") if p["time"] else p["date"]
+
+        if p["date"] != current_date:
+            if lines:
+                send(chat_id, "\n".join(lines), token)
+            current_date = p["date"]
+            lines = [f"\n\U0001f4c5 <b>{current_date}</b>\n{'\u2501'*22}"]
+
+        lines.append(
+            f"\n{emoji} <b>{name}</b>\n"
+            "\U0001f3e0 <b>" + p["home"] + "</b>\n"
+            "\u2708\ufe0f <b>" + p["away"] + "</b>\n"
+            "\u23f0 " + date_label + "\n"
+            + PRED_ICON_LOCAL[r["pred"]] + " <b>" + PRED_LABEL_LOCAL[r["pred"]] + "</b> \u2014 " + f'{r["conf"]*100:.1f}' + "%\n"
+            + "  H:" + f'{r["ph"]*100:.1f}' + "% D:" + f'{r["pd"]*100:.1f}' + "% A:" + f'{r["pa"]*100:.1f}' + "%\n"
+            + "\u26bd " + str(r["lh"]) + "\u2013" + str(r["la"]) + " | \U0001f3af " + top_sc + "\n"
+            f"{'\u2501'*22}"
+        )
+        total += 1
+
+    if lines:
+        send(chat_id, "\n".join(lines), token)
+
+    send(chat_id,
+        f"{'\u2501'*22}\n"
+        f"\u2705 Total SNIPER: <b>{total} picks</b>\n"
+        f"\U0001f4c5 Window: {now_wib.strftime('%d %b %H:%M')} \u2192 "
+        f"{end_wib.strftime('%d %b %H:%M')} WIB\n"
+        f"\U0001f916 Model V20.5.2 | Dixon-Coles + Elo\n"
+        f"<i>Shadow mode — bukan saran finansial</i>", token
+    )
+
+
 def weekly_report():
     v20=load_model()
     if not v20: return
