@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Football Sniper Bot V20.4.5 — with form/h2h/history/notif — Interactive Telegram Bot"""
+"""Football Sniper Bot V20.5.2 — with form/h2h/history/notif — Interactive Telegram Bot"""
 import json, math, os, requests, time
 import numpy as np
 from scipy.stats import poisson
@@ -739,10 +739,10 @@ def cmd_start(chat_id, v20, token):
     n_liga = len(v20.get("active_leagues",[]))
     n_teams= sum(len(v20["dc_params"].get(l,{}).get("attack",{})) for l in v20.get("active_leagues",[]))
     send(chat_id,
-        f"🎯 <b>Football Sniper V20.4.5</b>\n"
+        f"🎯 <b>Football Sniper V20.5.2</b>\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"Dixon-Coles V3 + Elo Walk-Forward\n"
-        f"Akurasi WF: 81.4% | {n_liga} liga | {n_teams} tim\n"
+        f"Akurasi WF: 87.4% | {n_liga} liga | {n_teams} tim\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
         f"📋 <b>PERINTAH TERSEDIA:</b>\n\n"
         f"/picks — SNIPER picks pekan ini\n"
@@ -1492,7 +1492,7 @@ def cmd_picks(chat_id, v20, token):
     send(chat_id,
         f"{'\u2501'*22}\n"
         f"\u2705 Total SNIPER: <b>{total} picks</b>\n"
-        f"\U0001f916 Model V20.5.1 | Dixon-Coles + Elo\n"
+        f"\U0001f916 Model V20.5.2 | Dixon-Coles + Elo\n"
         f"<i>Shadow mode — bukan saran finansial</i>", token
     )
 
@@ -1569,7 +1569,7 @@ def weekly_report():
         f"🎯 <b>FOOTBALL SNIPER</b> — Weekly Picks\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"📅 {ws.strftime('%d %b')} – {we.strftime('%d %b %Y')}\n"
-        f"🤖 V20.5.1 | 81.4% WF Accuracy"
+        f"🤖 V20.5.2 | 87.4% Backtest Accuracy"
     )
     cmd_picks(TELEGRAM_CHAT, v20, TELEGRAM_TOKEN)
 
