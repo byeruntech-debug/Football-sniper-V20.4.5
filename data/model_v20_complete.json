@@ -133,7 +133,7 @@
     "total_leagues": 10,
     "brazil_status": "watchlist",
     "brazil_note": "2 musim, n=12, 75% WF. Aktifkan setelah 2025 selesai",
-    "last_updated": "20260321_151746",
+    "last_updated": "20260321_222402",
     "j1_retrain": "20260318_063517 | 5301 laga | 56 tim | WF 57.3% n=131 thr=0.55",
     "j1_j2_retrain": "20260318_064544 | J1: 4495 laga 31tim thr=0.65 acc=57.9% | J2: 2608 laga 37tim thr=0.65 acc=81.2%",
     "j1_2026_update": "20260318_072432 | +58 laga MW1-6 2026 | 3 tim baru: V-Varen Nagasaki, JEF United, Mito HollyHock",
@@ -68812,6 +68812,13 @@
       "thr_new": 0.64,
       "evidence": "WF table: 0.64→88.5% n=52 | 0.67→93.3% n=30 | 0.68→95.7% n=23",
       "fixed_at": "20260321_151746"
+    },
+    "epl_thr_fix_20260321_222402": {
+      "reason": "thr 0.58 terlalu agresif (acc 79.2% n=120). thr 0.64 acc 88.5% n=52 lebih selektif",
+      "thr_old": 0.64,
+      "thr_new": 0.64,
+      "evidence": "WF table: 0.64→88.5% n=52 | 0.67→93.3% n=30 | 0.68→95.7% n=23",
+      "fixed_at": "20260321_222402"
     }
   },
   "notes": {
