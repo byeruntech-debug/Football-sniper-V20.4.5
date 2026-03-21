@@ -1214,19 +1214,15 @@ ESPN_TO_MODEL_GLOBAL = {
     "ael larissa": "Athlitiki Enosi Larisas",
     "panetolikos": "Panetolikos Agrinio",
     # ── J1 League ───────────────────────────────────────
+    # NOTE: JEF United & Mito HollyHock tidak ada di model — skip
     "tokyo verdy 1969": "Verdy",
     "kyoto sanga": "Kyoto Sanga FC",
     "urawa red diamonds": "Urawa Reds",
-    "jef united ichihara-chiba": "JEF United",
-    "jef united ichihara chiba": "JEF United",
-    "jef united": "JEF United",
-    "mito hollyhock": "Mito HollyHock",
     "hokkaido consadole sapporo": "Sapporo",
     # ── Brazil ──────────────────────────────────────────
+    # NOTE: Clube do Remo tidak ada di model — skip
     "red bull bragantino": "RB Bragantino",
     "vasco da gama": "Vasco",
-    "remo": "Clube do Remo",
-    "clube do remo": "Clube do Remo",
     # ── Venezuela ───────────────────────────────────────
     "academia anzoátegui": "Dep. Anzoátegui",
     "academia puerto cabello": "Puerto Cabello",
