@@ -1278,6 +1278,31 @@ def cmd_picks(chat_id, v20, token):
         "randers fc": "Randers Fodbold Club",
         "silkeborg if": "Silkeborg Idrætsforening",
         "viborg ff": "Viborg Fodsports Forening",
+        # ── Ligue 1 — missing mappings ───────────────────────
+        "ogc nice": "Nice",
+        "nice": "Nice",
+        "olympique lyonnais": "Lyon",
+        "olympique de marseille": "Marseille",
+        "rc lens": "Lens",
+        "rc strasbourg alsace": "Strasbourg",
+        "toulouse fc": "Toulouse",
+        "montpellier hsc": "Montpellier",
+        "angers sco": "Angers",
+        "fc nantes": "Nantes",
+        "fc metz": "Metz",
+        "stade de reims": "Reims",
+        # ── J1 League — missing mappings ─────────────────────
+        "jef united ichihara-chiba": "JEF United",
+        "jef united ichihara chiba": "JEF United",
+        "mito hollyhock": "Mito HollyHock",
+        # ── Brazil — fix Remo ────────────────────────────────
+        "remo": "Clube do Remo",
+        "clube do remo": "Clube do Remo",
+        # ── Russia — fix Lokomotiv (bukan Torpedo) ───────────
+        "lokomotiv moscow": "Футбольный клуб \"Локомотив\" Москва",
+        "fc lokomotiv moscow": "Футбольный клуб \"Локомотив\" Москва",
+        "torpedo moscow": "Torpedo Moscow",
+        "fc torpedo moscow": "Torpedo Moscow",
     }
 
     def find_model_team(espn_name, model_teams):
