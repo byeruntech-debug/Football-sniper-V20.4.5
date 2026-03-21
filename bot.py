@@ -992,7 +992,7 @@ ESPN_TO_MODEL_GLOBAL = {
     # ── UCL ─────────────────────────────────────────────
     "fc barcelona": "Barcelona",
     "barcelona": "Barcelona",
-    "atlético madrid": "Atletico Madrid",
+    "atlético madrid": "Ath Madrid",
     "atletico madrid": "Ath Madrid",
     "atletico de madrid": "Ath Madrid",
     "atlético de madrid": "Ath Madrid",
