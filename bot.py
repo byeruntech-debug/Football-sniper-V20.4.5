@@ -1278,6 +1278,24 @@ def cmd_picks(chat_id, v20, token):
         "randers fc": "Randers Fodbold Club",
         "silkeborg if": "Silkeborg Idrætsforening",
         "viborg ff": "Viborg Fodsports Forening",
+        # ── Russia — fix Dinamo Moscow explicit ─────────────
+        "dinamo moscow": "FK Dinamo Moskva",
+        "fc dinamo moscow": "FK Dinamo Moskva",
+        "dinamo makhachkala": "Dinamo Makhachkala",
+        # ── Venezuela — fix Estudiantes Mérida explicit ──────
+        "estudiantes de mérida": "Estudiantes M.",
+        "estudiantes merida": "Estudiantes M.",
+        "estudiantes de merida": "Estudiantes M.",
+        # ── Serie A — Internazionale ──────────────────────────
+        "internazionale": "Inter",
+        "fc internazionale": "Inter",
+        "inter milan": "Inter",
+        # ── La Liga — Alavés ──────────────────────────────────
+        "alavés": "Alaves",
+        "deportivo alaves": "Alaves",
+        # ── Greece — Larissa FC ───────────────────────────────
+        "larissa fc": "Athlitiki Enosi Larisas",
+        "ael larissa": "Athlitiki Enosi Larisas",
         # ── Ligue 1 — missing mappings ───────────────────────
         "ogc nice": "Nice",
         "nice": "Nice",
@@ -1794,6 +1812,24 @@ def cmd_today(chat_id, v20, token):
         "fc nordsjælland":"Fodbold Club Nordsjælland",
         "randers fc":"Randers Fodbold Club","silkeborg if":"Silkeborg Idrætsforening",
         "viborg ff":"Viborg Fodsports Forening",
+        # ── Russia — fix Dinamo Moscow explicit ─────────────
+        "dinamo moscow": "FK Dinamo Moskva",
+        "fc dinamo moscow": "FK Dinamo Moskva",
+        "dinamo makhachkala": "Dinamo Makhachkala",
+        # ── Venezuela — fix Estudiantes Mérida explicit ──────
+        "estudiantes de mérida": "Estudiantes M.",
+        "estudiantes merida": "Estudiantes M.",
+        "estudiantes de merida": "Estudiantes M.",
+        # ── Serie A — Internazionale ──────────────────────────
+        "internazionale": "Inter",
+        "fc internazionale": "Inter",
+        "inter milan": "Inter",
+        # ── La Liga — Alavés ──────────────────────────────────
+        "alavés": "Alaves",
+        "deportivo alaves": "Alaves",
+        # ── Greece — Larissa FC ───────────────────────────────
+        "larissa fc": "Athlitiki Enosi Larisas",
+        "ael larissa": "Athlitiki Enosi Larisas",
         # ── Ligue 1 — missing mappings ───────────────────────
         "ogc nice":"Nice",
         "nice":"Nice",
