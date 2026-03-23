@@ -1273,7 +1273,10 @@ ESPN_TO_MODEL_GLOBAL = {
 
 
 def _is_already_saved(home, away, liga, fix_date):
-    """Cek apakah prediksi ini sudah tersimpan di history (cegah duplikasi)."""
+    """Cek apakah prediksi ini sudah tersimpan di history (cegah duplikasi).
+    Jika fix_date=None → selalu anggap belum tersimpan (tidak bisa bandingkan)."""
+    if not fix_date:
+        return False
     try:
         h = _load_history()
         for p in h.get("predictions", []):
