@@ -25,7 +25,8 @@ def _add_pred(home, away, liga, pred, conf,
               fix_date=None, fix_time=None,
               espn_home=None, espn_away=None):
     h = _load_history()
-    pid = len(h["predictions"]) + 1
+    preds = h.get("predictions", [])
+    pid = (max(p["id"] for p in preds) + 1) if preds else 1
     h["predictions"].append({
         "id": pid, "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "home": home, "away": away, "liga": liga,
@@ -1524,7 +1525,9 @@ def run_bot():
     if not v20:
         print("❌ Model tidak ditemukan"); return
     _notif_store     = _load_notif_store()  # persistent — chat_id -> jam WIB
-    _last_notif_date = {}                   # chat_id -> date terakhir kirim
+    # Load _last_notif_date dari notif_store agar survive restart
+    _last_notif_date = {k:v for k,v in _notif_store.items()
+                        if k.startswith("__last__")}
     print(f"✅ Bot aktif | {len(v20.get('active_leagues',[]))} liga")
     print("Kirim /start ke bot untuk mulai\nCtrl+C untuk stop\n")
     offset = 0
@@ -1581,7 +1584,9 @@ def run_bot():
             try:
                 new_results = _auto_fetch_results()
                 if new_results:
-                    _daily_results_buffer.extend(new_results)
+                    _buf = _load_buffer()
+                    _buf.extend(new_results)
+                    _save_buffer(_buf)
             except Exception as afe:
                 print(f"[AutoFetch] Error: {afe}")
 
@@ -1590,6 +1595,7 @@ def run_bot():
                 _now_sum   = datetime.utcnow() + timedelta(hours=7)
                 _sum_time  = _now_sum.strftime("%H:%M")
                 _sum_date  = str(_now_sum.date())
+                _daily_results_buffer = _load_buffer()
                 if (_sum_time >= "23:00" and _sum_time <= "23:05"
                         and _sum_date != _last_notif_date.get("__summary__")
                         and _daily_results_buffer):
@@ -1624,8 +1630,11 @@ def run_bot():
                             send(cid, "\n".join(lines_msg), TELEGRAM_TOKEN)
                         except Exception as ne:
                             print(f"[Summary] Notif error {cid_str}: {ne}")
-                    _daily_results_buffer.clear()
+                    _clear_buffer()
                     _last_notif_date["__summary__"] = _sum_date
+                    # Persist summary date
+                    _notif_store["__summary__"] = _sum_date
+                    _save_notif_store(_notif_store)
             except Exception as se:
                 print(f"[Summary] Error: {se}")
 
@@ -1637,10 +1646,12 @@ def run_bot():
                 for cid_str, jam in list(_notif_store.items()):
                     cid = int(cid_str)
                     # Kirim jika: jam cocok (toleransi 1 menit) DAN belum kirim hari ini
-                    if (now_time == jam or
-                        (abs(int(now_time.replace(":","")) -
-                             int(jam.replace(":",""))
-                        ) <= 1)):
+                    # Hitung selisih menit dengan benar (handle midnight crossing)
+                    def _min_diff(t1, t2):
+                        h1,m1 = map(int, t1.split(":")); h2,m2 = map(int, t2.split(":"))
+                        diff = abs((h1*60+m1) - (h2*60+m2))
+                        return min(diff, 1440-diff)  # handle midnight crossing
+                    if (_min_diff(now_time, jam) <= 1):
                         last = _last_notif_date.get(cid_str)
                         if last != str(now_date):
                             print(f"[Notif] Kirim picks ke {cid_str} jam {jam}")
@@ -1651,6 +1662,9 @@ def run_bot():
                             )
                             cmd_picks(cid, v20, TELEGRAM_TOKEN)
                             _last_notif_date[cid_str] = str(now_date)
+                            # Persist ke notif_store agar survive restart
+                            _notif_store[f"__last__{cid_str}"] = str(now_date)
+                            _save_notif_store(_notif_store)
             except Exception as ne:
                 print(f"[Notif] Error: {ne}")
 
@@ -2002,7 +2016,26 @@ def _auto_fetch_results():
 
 
 # Buffer hasil harian — dikumpulkan lalu dikirim jam 23:00 WIB
-_daily_results_buffer = []
+# Disimpan ke file agar survive Railway restart
+_BUFFER_FILE = "data/daily_buffer.json"
+
+def _load_buffer():
+    try:
+        if os.path.exists(_BUFFER_FILE):
+            with open(_BUFFER_FILE) as f: return json.load(f)
+    except: pass
+    return []
+
+def _save_buffer(buf):
+    try:
+        os.makedirs("data", exist_ok=True)
+        with open(_BUFFER_FILE, "w") as f: json.dump(buf, f)
+    except: pass
+
+def _clear_buffer():
+    try:
+        if os.path.exists(_BUFFER_FILE): os.remove(_BUFFER_FILE)
+    except: pass
 
 
 def weekly_report():
