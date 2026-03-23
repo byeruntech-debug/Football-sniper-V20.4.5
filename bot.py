@@ -1403,13 +1403,10 @@ def cmd_picks(chat_id, v20, token):
                         "liga": liga,
                         "home": espn_home,
                         "away": espn_away,
+                        "home_model": home_model,
+                        "away_model": away_model,
                         "result": result,
                     })
-                    if not _is_already_saved(home_model, away_model, liga, fix_date):
-                        _add_pred(home_model, away_model, liga,
-                                  result["pred"], result["conf"],
-                                  fix_date=fix_date, fix_time=fix_time,
-                                  espn_home=espn_home, espn_away=espn_away)
         except Exception as ex:
             print(f"[Bot] Error {liga}: {ex}")
 
@@ -1444,18 +1441,32 @@ def cmd_picks(chat_id, v20, token):
                         "liga"  : liga,
                         "home"  : home_model,
                         "away"  : away_model,
+                        "home_model": home_model,
+                        "away_model": away_model,
                         "result": result,
                     })
-                    if not _is_already_saved(home_model, away_model, liga, fix_date):
-                        _add_pred(home_model, away_model, liga,
-                                  result["pred"], result["conf"],
-                                  fix_date=fix_date, fix_time=fix_time,
-                                  espn_home=home_model, espn_away=away_model)
             except Exception as ex:
                 print(f"[Bot] J2 cache error: {ex}")
 
     # Urutkan berdasarkan tanggal
     sniper_picks.sort(key=lambda x: (x["date"], x["time"] or "99:99"))
+
+    # ── Batch save ke history — 1x setelah semua picks terkumpul ──
+    saved_count = 0
+    for sp in sniper_picks:
+        try:
+            hm = sp.get("home_model") or sp["home"]
+            am = sp.get("away_model") or sp["away"]
+            if not _is_already_saved(hm, am, sp["liga"], sp["date"]):
+                _add_pred(hm, am, sp["liga"],
+                          sp["result"]["pred"], sp["result"]["conf"],
+                          fix_date=sp["date"], fix_time=sp["time"],
+                          espn_home=sp["home"], espn_away=sp["away"])
+                saved_count += 1
+        except Exception as se:
+            print(f"[Picks] _add_pred error: {se}")
+    if saved_count > 0:
+        print(f"[Picks] {saved_count} prediksi baru tersimpan ke history")
 
     if not sniper_picks:
         send(chat_id, "Tidak ada SNIPER picks dalam 30 hari ke depan", token)
@@ -1760,13 +1771,9 @@ def cmd_today(chat_id, v20, token):
                     sniper_picks.append({
                         "date": fix_date, "time": fix_time,
                         "liga": liga, "home": espn_home, "away": espn_away,
+                        "home_model": home_model, "away_model": away_model,
                         "result": result,
                     })
-                    if not _is_already_saved(home_model, away_model, liga, fix_date):
-                        _add_pred(home_model, away_model, liga,
-                                  result["pred"], result["conf"],
-                                  fix_date=fix_date, fix_time=fix_time,
-                                  espn_home=espn_home, espn_away=espn_away)
         except Exception as ex:
             print(f"[Today] Error {liga}: {ex}")
 
@@ -1795,17 +1802,30 @@ def cmd_today(chat_id, v20, token):
                     sniper_picks.append({
                         "date": fix_date, "time": fix_time,
                         "liga": liga, "home": home_model, "away": away_model,
+                        "home_model": home_model, "away_model": away_model,
                         "result": result,
                     })
-                    if not _is_already_saved(home_model, away_model, liga, fix_date):
-                        _add_pred(home_model, away_model, liga,
-                                  result["pred"], result["conf"],
-                                  fix_date=fix_date, fix_time=fix_time,
-                                  espn_home=home_model, espn_away=away_model)
             except Exception as ex:
                 print(f"[Today] J2 error: {ex}")
 
     sniper_picks.sort(key=lambda x: (x["date"], x["time"] or "99:99"))
+
+    # ── Batch save ke history — 1x setelah semua picks terkumpul ──
+    saved_today = 0
+    for sp in sniper_picks:
+        try:
+            hm = sp.get("home_model") or sp["home"]
+            am = sp.get("away_model") or sp["away"]
+            if not _is_already_saved(hm, am, sp["liga"], sp["date"]):
+                _add_pred(hm, am, sp["liga"],
+                          sp["result"]["pred"], sp["result"]["conf"],
+                          fix_date=sp["date"], fix_time=sp["time"],
+                          espn_home=sp["home"], espn_away=sp["away"])
+                saved_today += 1
+        except Exception as se:
+            print(f"[Today] _add_pred error: {se}")
+    if saved_today > 0:
+        print(f"[Today] {saved_today} prediksi baru tersimpan ke history")
 
     if not sniper_picks:
         send(chat_id,
@@ -1973,6 +1993,7 @@ def _auto_fetch_results():
 
     if updated:
         _save_history(h)
+        _git_push_data("auto: update hasil pertandingan")
 
     return updated
 
