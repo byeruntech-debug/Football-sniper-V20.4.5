@@ -1272,6 +1272,21 @@ ESPN_TO_MODEL_GLOBAL = {
 }
 
 
+def _is_already_saved(home, away, liga, fix_date):
+    """Cek apakah prediksi ini sudah tersimpan di history (cegah duplikasi)."""
+    try:
+        h = _load_history()
+        for p in h.get("predictions", []):
+            if (p.get("home","").lower() == home.lower() and
+                p.get("away","").lower() == away.lower() and
+                p.get("liga") == liga and
+                p.get("fix_date") == fix_date):
+                return True
+    except:
+        pass
+    return False
+
+
 def cmd_picks(chat_id, v20, token):
     import datetime as _dt
     now_dt    = _dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None) + _dt.timedelta(hours=7)
@@ -1390,6 +1405,11 @@ def cmd_picks(chat_id, v20, token):
                         "away": espn_away,
                         "result": result,
                     })
+                    if not _is_already_saved(home_model, away_model, liga, fix_date):
+                        _add_pred(home_model, away_model, liga,
+                                  result["pred"], result["conf"],
+                                  fix_date=fix_date, fix_time=fix_time,
+                                  espn_home=espn_home, espn_away=espn_away)
         except Exception as ex:
             print(f"[Bot] Error {liga}: {ex}")
 
@@ -1426,6 +1446,11 @@ def cmd_picks(chat_id, v20, token):
                         "away"  : away_model,
                         "result": result,
                     })
+                    if not _is_already_saved(home_model, away_model, liga, fix_date):
+                        _add_pred(home_model, away_model, liga,
+                                  result["pred"], result["conf"],
+                                  fix_date=fix_date, fix_time=fix_time,
+                                  espn_home=home_model, espn_away=away_model)
             except Exception as ex:
                 print(f"[Bot] J2 cache error: {ex}")
 
@@ -1737,6 +1762,11 @@ def cmd_today(chat_id, v20, token):
                         "liga": liga, "home": espn_home, "away": espn_away,
                         "result": result,
                     })
+                    if not _is_already_saved(home_model, away_model, liga, fix_date):
+                        _add_pred(home_model, away_model, liga,
+                                  result["pred"], result["conf"],
+                                  fix_date=fix_date, fix_time=fix_time,
+                                  espn_home=espn_home, espn_away=espn_away)
         except Exception as ex:
             print(f"[Today] Error {liga}: {ex}")
 
@@ -1767,6 +1797,11 @@ def cmd_today(chat_id, v20, token):
                         "liga": liga, "home": home_model, "away": away_model,
                         "result": result,
                     })
+                    if not _is_already_saved(home_model, away_model, liga, fix_date):
+                        _add_pred(home_model, away_model, liga,
+                                  result["pred"], result["conf"],
+                                  fix_date=fix_date, fix_time=fix_time,
+                                  espn_home=home_model, espn_away=away_model)
             except Exception as ex:
                 print(f"[Today] J2 error: {ex}")
 
