@@ -6,3 +6,4 @@ outputs/backups/
 .DS_Store
 
 bot_bkp_*.py
+bot_backup_*.py
