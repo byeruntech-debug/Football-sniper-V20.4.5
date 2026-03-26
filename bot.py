@@ -4,6 +4,37 @@ import json, math, os, requests, time
 import numpy as np
 from scipy.stats import poisson
 from datetime import datetime, timedelta
+
+# --- INJEKSI THE-ODDS-API AUTO-PATCHER ---
+import requests as _requests
+import os as _os
+
+_ODDS_API_KEY = _os.environ.get("ODDS_API_KEY", "")
+_SPORT_KEYS = {
+    "EPL": "soccer_epl", "La_Liga": "soccer_spain_la_liga",
+    "Bundesliga": "soccer_germany_bundesliga", "Serie_A": "soccer_italy_serie_a",
+    "Ligue_1": "soccer_france_ligue_one"
+}
+
+def get_live_odds_for_match(home_team, liga, prediction_label):
+    if liga not in _SPORT_KEYS or not _ODDS_API_KEY: return None
+    try:
+        url = f"https://api.the-odds-api.com/v4/sports/{_SPORT_KEYS[liga]}/odds"
+        resp = _requests.get(url, params={'apiKey': _ODDS_API_KEY, 'regions': 'eu,uk', 'markets': 'h2h', 'oddsFormat': 'decimal'}, timeout=10)
+        if resp.status_code != 200: return None
+        games = resp.json()
+        for g in games:
+            if home_team.lower() in g['home_team'].lower() or g['home_team'].lower() in home_team.lower():
+                if not g.get('bookmakers'): continue
+                for m in g['bookmakers'][0].get('markets', []):
+                    if m['key'] == 'h2h':
+                        odds_dict = {o['name']: o['price'] for o in m['outcomes']}
+                        if prediction_label == 'home_win': return odds_dict.get(g['home_team'])
+                        if prediction_label == 'away_win': return odds_dict.get(g['away_team'])
+                        if prediction_label == 'draw': return odds_dict.get('Draw') or odds_dict.get('draw')
+    except Exception: pass
+    return None
+# -----------------------------------------
 # ═══════════════════════════════════════
 # FITUR BARU: FORM, H2H, HISTORY, NOTIF
 # ═══════════════════════════════════════
@@ -1038,6 +1069,8 @@ def cmd_prediksi(chat_id, v20, token, args):
             send(chat_id, f"❌ Tim tamu <code>{away_raw}</code> tidak ditemukan di {liga}\nKetik /tim {liga}", token)
             return
         r = predict_match(v20, home, away, liga)
+        if isinstance(r, dict) and "prediction" in r:
+            r["odds"] = get_live_odds_for_match(home, liga, r.get("prediction"))
         if not r:
             send(chat_id, "❌ Prediksi gagal", token)
             return
@@ -1504,6 +1537,10 @@ def cmd_picks(chat_id, v20, token):
                     continue
 
                 result = predict_match(v20, home_model, away_model, liga)
+
+                if isinstance(result, dict) and "prediction" in result:
+
+                    result["odds"] = get_live_odds_for_match(home_model, liga, result.get("prediction"))
                 if result and result["tier"] == "SNIPER":
                     sniper_picks.append({
                         "date": fix_date,
@@ -1542,6 +1579,8 @@ def cmd_picks(chat_id, v20, token):
                 except:
                     pass
                 result = predict_match(v20, home_model, away_model, liga)
+                if isinstance(result, dict) and "prediction" in result:
+                    result["odds"] = get_live_odds_for_match(home_model, liga, result.get("prediction"))
                 if result and result["tier"] == "SNIPER":
                     sniper_picks.append({
                         "date"  : fix_date,
@@ -1888,6 +1927,8 @@ def cmd_today(chat_id, v20, token):
                 if is_blacklisted(espn_home, home_model) or is_blacklisted(espn_away, away_model):
                     continue
                 result = predict_match(v20, home_model, away_model, liga)
+                if isinstance(result, dict) and "prediction" in result:
+                    result["odds"] = get_live_odds_for_match(home_model, liga, result.get("prediction"))
                 if result and result["tier"] == "SNIPER":
                     sniper_picks.append({
                         "date": fix_date, "time": fix_time,
@@ -1919,6 +1960,8 @@ def cmd_today(chat_id, v20, token):
                 except:
                     pass
                 result = predict_match(v20, home_model, away_model, liga)
+                if isinstance(result, dict) and "prediction" in result:
+                    result["odds"] = get_live_odds_for_match(home_model, liga, result.get("prediction"))
                 if result and result["tier"] == "SNIPER":
                     sniper_picks.append({
                         "date": fix_date, "time": fix_time,
