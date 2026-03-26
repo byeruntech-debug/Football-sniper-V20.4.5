@@ -627,21 +627,7 @@ def send(chat_id, msg, token=None):
             json={"chat_id":chat_id,"text":chunk,"parse_mode":"HTML"}
         )
 
-def predict_match(v20, home, away, liga,
-                   home_formation=None, away_formation=None,
-                   home_rest_days=None, away_rest_days=None):
-    """
-    Dixon-Coles prediction with V3 Extended adjustments.
-    
-    Extended features (optional, backward compatible):
-      - home_formation: "4-4-2","3-5-2","5-3-2", etc. → mapped to 3/4/5-back
-      - away_formation: same
-      - home_rest_days: days since last match (float/int)
-      - away_rest_days: same
-    
-    If not provided → no adjustment (multiplier = 1.0).
-    Extended params read from v20["extended_params"].
-    """
+def predict_match(v20, home, away, liga):
     # Guard 1: tim sama → tidak valid
     if home == away:
         return None
@@ -671,84 +657,7 @@ def predict_match(v20, home, away, liga,
     if home not in atk and away not in atk:
         return None
 
-    # ── BASE LAMBDA ──────────────────────────────────────
-    lh = math.exp(att_home + def_away + hfa)
-    la = math.exp(att_away + def_home)
-
-    # ═══════════════════════════════════════════════════════
-    #  V3 EXTENDED: Formation + Rest adjustment
-    #  Hanya multiply ke lambda — semua optional & safe
-    # ═══════════════════════════════════════════════════════
-    ext = v20.get("extended_params", {})
-
-    # ── Formation adjustment ─────────────────────────────
-    form_factors = ext.get("formation_factors", {})
-    form_cap = ext.get("form_cap", 0.1)  # max deviation from 1.0
-
-    def _get_formation_multiplier(formation, side):
-        """Map formation string ke back-line category, return multiplier."""
-        if not formation or not form_factors:
-            return 1.0
-        # Extract first digit = number of defenders
-        f_str = str(formation).strip()
-        if not f_str or not f_str[0].isdigit():
-            key = f"{side}_other"
-        else:
-            n_def = int(f_str[0])
-            if n_def == 3:
-                key = f"{side}_3-back"
-            elif n_def == 4:
-                key = f"{side}_4-back"
-            elif n_def >= 5:
-                key = f"{side}_5-back"
-            else:
-                key = f"{side}_other"
-        raw = form_factors.get(key, 1.0)
-        # Safety cap: clamp within [1 - form_cap, 1 + form_cap]
-        return max(1.0 - form_cap, min(1.0 + form_cap, raw))
-
-    ff_home = _get_formation_multiplier(home_formation, "home")
-    ff_away = _get_formation_multiplier(away_formation, "away")
-
-    # ── Rest days adjustment ─────────────────────────────
-    k_rest = ext.get("k_rest", 0.0)
-    avg_rest = ext.get("avg_rest_days", 8.0)
-
-    def _get_rest_multiplier(rest_home, rest_away):
-        """Rest advantage: more rest = slight boost, less = slight penalty."""
-        if rest_home is None or rest_away is None or k_rest == 0:
-            return 1.0, 1.0
-        try:
-            rh_val = float(rest_home)
-            ra_val = float(rest_away)
-        except (TypeError, ValueError):
-            return 1.0, 1.0
-        # rest_diff from perspective of each team
-        diff_h = rh_val - ra_val  # positive = home has MORE rest
-        diff_a = ra_val - rh_val
-        # Clamp diff to [-10, 10] for safety
-        diff_h = max(-10, min(10, diff_h))
-        diff_a = max(-10, min(10, diff_a))
-        mult_h = 1.0 + k_rest * diff_h
-        mult_a = 1.0 + k_rest * diff_a
-        # Safety: clamp [0.95, 1.05] — rest should never flip a prediction
-        mult_h = max(0.95, min(1.05, mult_h))
-        mult_a = max(0.95, min(1.05, mult_a))
-        return mult_h, mult_a
-
-    rm_home, rm_away = _get_rest_multiplier(home_rest_days, away_rest_days)
-
-    # ── Apply adjustments to lambda ──────────────────────
-    lh = lh * ff_home * rm_home
-    la = la * ff_away * rm_away
-
-    # Safety floor: lambda must stay positive and reasonable
-    lh = max(0.15, min(5.0, lh))
-    la = max(0.15, min(5.0, la))
-
-    # ═══════════════════════════════════════════════════════
-    #  Score matrix (Dixon-Coles tau correction)
-    # ═══════════════════════════════════════════════════════
+    lh=math.exp(att_home+def_away+hfa); la=math.exp(att_away+def_home)
     M=np.zeros((9,9))
     for gh in range(9):
         for ga in range(9):
@@ -873,26 +782,13 @@ def predict_match(v20, home, away, liga,
 
     flat=np.argsort(M.ravel())[::-1][:3]
     top=[(int(i//9),int(i%9),float(M.ravel()[i])) for i in flat]
-
-    # ── Build result with V3 metadata ────────────────
-    result = {
+    return {
         "pred":pred,"conf":round(conf,4),"tier":"SNIPER" if conf>=thr else "HOLD",
         "ph":round(ph,3),"pd":round(pd,3),"pa":round(pa,3),
         "thr":round(thr,2),"lh":round(lh,2),"la":round(la,2),
         "top_scores":top,"elo_h":rh_,"elo_a":ra_,
         "draw_warn":draw_warn,"draw_warn_thr":round(dw_thr,3),
     }
-
-    # V3 extended info (hanya jika ada adjustment)
-    if ff_home != 1.0 or ff_away != 1.0 or rm_home != 1.0 or rm_away != 1.0:
-        result["v3_adj"] = {
-            "form_home": round(ff_home, 4),
-            "form_away": round(ff_away, 4),
-            "rest_home": round(rm_home, 4),
-            "rest_away": round(rm_away, 4),
-        }
-
-    return result
 
 def cmd_start(chat_id, v20, token):
     n_liga = len(v20.get("active_leagues",[]))

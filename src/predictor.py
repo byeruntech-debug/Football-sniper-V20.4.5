@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Football Sniper Prediction System
-Version : V20.3-EXPANDED-FINAL
+Version : V20.5.2-V3Extended
 Engine  : Dixon-Coles V3 + Elo Walk-Forward
 Accuracy: 81.4% (warm walk-forward, no data leakage)
 Yield   : +1.6% vs B365 closing odds (194 picks)
@@ -79,7 +79,9 @@ def _tau(lh: float, la: float, gh: int, ga: int, rho: float) -> float:
     return 1.0
 
 
-def dc_predict(home: str, away: str, liga: str, max_goals: int = 8) -> dict | None:
+def dc_predict(home: str, away: str, liga: str, max_goals: int = 8,
+               home_formation: str = None, away_formation: str = None,
+               home_rest_days: float = None, away_rest_days: float = None) -> dict | None:
     """
     Hitung probabilitas H/D/A dengan Dixon-Coles Poisson model.
 
