@@ -99,8 +99,8 @@ def cmd_form(chat_id, v20, token, args):
     # Hitung form dari H2H aggregate
     total_m = wins = draws = losses = 0
     for key, val in h2h.items():
-        try: t1, t2 = eval(key)
-        except: continue
+        t1, t2 = val.get("t1"), val.get("t2")
+        if not t1 or not t2: continue
         if team not in (t1, t2): continue
         tot = val.get("total", 0)
         if tot == 0: continue
@@ -136,8 +136,8 @@ def cmd_h2h(chat_id, v20, token, args):
     h2h = v20.get("h2h_stats", {})
     found = None
     for key, val in h2h.items():
-        try: t1, t2 = eval(key)
-        except: continue
+        t1, t2 = val.get("t1"), val.get("t2")
+        if not t1 or not t2: continue
         if (t1_raw.lower() in t1.lower() or t1.lower() in t1_raw.lower()) and            (t2_raw.lower() in t2.lower() or t2.lower() in t2_raw.lower()):
             found = (t1, t2, val); break
         if (t1_raw.lower() in t2.lower() or t2.lower() in t1_raw.lower()) and            (t2_raw.lower() in t1.lower() or t1.lower() in t2_raw.lower()):
@@ -275,7 +275,7 @@ LIGA_ESPN = {
     "Liga_Portugal":"por.1","Super_Lig":"tur.1","Belgium":"bel.1",
     "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
     "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
-    "Denmark":"den.1",
+    "Denmark":"den.1","Ukraine":"ukr.1",
     "UCL":"uefa.champions",
 }
 
@@ -672,6 +672,13 @@ def predict_match(v20, home, away, liga,
     
     If not provided → no adjustment (multiplier = 1.0).
     Extended params read from v20["extended_params"].
+
+    CATATAN STATUS (V20.5.2 — BUG-003): tidak ada pemanggil predict_match yang
+    mengirim argumen formation/rest. Semua memanggil predict_match(v20, home,
+    away, liga) saja, sehingga formation & rest multiplier SELALU 1.0 — fitur
+    V3 Extended efektif NON-AKTIF di produksi. Ini disengaja sampai tersedia
+    sumber data formasi & jadwal. Untuk mengaktifkan: kirim kedua data tsb.
+    pada pemanggilan di cmd_prediksi, cmd_picks, dan cmd_today.
     """
     # Guard 1: tim sama → tidak valid
     if home == away:
@@ -709,6 +716,7 @@ def predict_match(v20, home, away, liga,
     # ═══════════════════════════════════════════════════════
     #  V3 EXTENDED: Formation + Rest adjustment
     #  Hanya multiply ke lambda — semua optional & safe
+    #  STATUS: efektif NON-AKTIF — tidak ada caller yang kirim formation/rest (BUG-003)
     # ═══════════════════════════════════════════════════════
     ext = v20.get("extended_params", {})
 
@@ -932,7 +940,7 @@ def cmd_start(chat_id, v20, token):
         f"🎯 <b>Football Sniper V20.5.2</b>\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"Dixon-Coles V3 + Elo Walk-Forward\n"
-        f"Akurasi WF: 87.4% | {n_liga} liga | {n_teams} tim\n"
+        f"Akurasi WF: 81.4% | {n_liga} liga | {n_teams} tim\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
         f"📋 <b>PERINTAH TERSEDIA:</b>\n\n"
         f"/today — SNIPER picks hari ini & besok\n"
@@ -1069,8 +1077,8 @@ def cmd_prediksi(chat_id, v20, token, args):
             send(chat_id, f"❌ Tim tamu <code>{away_raw}</code> tidak ditemukan di {liga}\nKetik /tim {liga}", token)
             return
         r = predict_match(v20, home, away, liga)
-        if isinstance(r, dict) and "prediction" in r:
-            r["odds"] = get_live_odds_for_match(home, liga, r.get("prediction"))
+        if isinstance(r, dict) and "pred" in r:
+            r["odds"] = get_live_odds_for_match(home, liga, r["pred"])
         if not r:
             send(chat_id, "❌ Prediksi gagal", token)
             return
@@ -1096,6 +1104,7 @@ def cmd_prediksi(chat_id, v20, token, args):
             f"⚽ Ekspektasi gol : {r['lh']} – {r['la']}\n"
             f"🎯 Skor prediksi  : {top_sc}\n"
             f"📈 Elo: {r['elo_h']} vs {r['elo_a']} (gap {gap:+d})\n"
+            + (f"💰 Odds (live): {r['odds']:.2f}\n" if r.get('odds') else "")
             + (f"⚠️ <i>Draw warning — peluang seri {r['pd']*100:.0f}% "
                f"(threshold {r['draw_warn_thr']*100:.0f}%)</i>\n" if r.get('draw_warn') else "")
             + "━━━━━━━━━━━━━━━━━━━━━━━\n"
@@ -1447,7 +1456,7 @@ def cmd_picks(chat_id, v20, token):
         "Liga_Portugal":"por.1","Super_Lig":"tur.1","Belgium":"bel.1",
         "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
         "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
-        "Denmark":"den.1",
+        "Denmark":"den.1","Ukraine":"ukr.1",
         "UCL":"uefa.champions",
     }
 
@@ -1538,9 +1547,9 @@ def cmd_picks(chat_id, v20, token):
 
                 result = predict_match(v20, home_model, away_model, liga)
 
-                if isinstance(result, dict) and "prediction" in result:
+                if isinstance(result, dict) and "pred" in result:
 
-                    result["odds"] = get_live_odds_for_match(home_model, liga, result.get("prediction"))
+                    result["odds"] = get_live_odds_for_match(home_model, liga, result["pred"])
                 if result and result["tier"] == "SNIPER":
                     sniper_picks.append({
                         "date": fix_date,
@@ -1579,8 +1588,8 @@ def cmd_picks(chat_id, v20, token):
                 except:
                     pass
                 result = predict_match(v20, home_model, away_model, liga)
-                if isinstance(result, dict) and "prediction" in result:
-                    result["odds"] = get_live_odds_for_match(home_model, liga, result.get("prediction"))
+                if isinstance(result, dict) and "pred" in result:
+                    result["odds"] = get_live_odds_for_match(home_model, liga, result["pred"])
                 if result and result["tier"] == "SNIPER":
                     sniper_picks.append({
                         "date"  : fix_date,
@@ -1637,7 +1646,7 @@ def cmd_picks(chat_id, v20, token):
             if lines:
                 send(chat_id, "\n".join(lines), token)
             current_date = p["date"]
-            lines = [f"\n\U0001f4c5 <b>{current_date}</b>\n{'\u2501'*22}"]
+            lines = [f"\n\U0001f4c5 <b>{current_date}</b>\n{chr(0x2501)*22}"]
 
         lines.append(
             f"\n{emoji} <b>{name}</b>\n"
@@ -1647,7 +1656,8 @@ def cmd_picks(chat_id, v20, token):
             + PRED_ICON_LOCAL[r["pred"]] + " <b>" + PRED_LABEL_LOCAL[r["pred"]] + "</b> \u2014 " + f'{r["conf"]*100:.1f}' + "%\n"
             + "  H:" + f'{r["ph"]*100:.1f}' + "% D:" + f'{r["pd"]*100:.1f}' + "% A:" + f'{r["pa"]*100:.1f}' + "%\n"
             + "\u26bd " + str(r["lh"]) + "\u2013" + str(r["la"]) + " | \U0001f3af " + top_sc + "\n"
-            f"{'\u2501'*22}"
+            + (f"💰 Odds: {r['odds']:.2f}\n" if r.get('odds') else "")
+            + f"{chr(0x2501)*22}"
         )
         total += 1
 
@@ -1655,7 +1665,7 @@ def cmd_picks(chat_id, v20, token):
         send(chat_id, "\n".join(lines), token)
 
     send(chat_id,
-        f"{'\u2501'*22}\n"
+        f"{chr(0x2501)*22}\n"
         f"\u2705 Total SNIPER: <b>{total} picks</b>\n"
         f"\U0001f916 Model V20.5.2 | Dixon-Coles + Elo\n"
         f"<i>Shadow mode — bukan saran finansial</i>", token
@@ -1673,6 +1683,22 @@ def run_bot():
                         if k.startswith("__last__")}
     print(f"✅ Bot aktif | {len(v20.get('active_leagues',[]))} liga")
     print("Kirim /start ke bot untuk mulai\nCtrl+C untuk stop\n")
+    # OPS-1: diagnostik persistensi history saat startup (cegah gagal senyap)
+    try:
+        import subprocess as _sp_chk
+        _has_token = bool(os.environ.get("GITHUB_TOKEN", ""))
+        _has_git = _sp_chk.run("git rev-parse --git-dir", shell=True,
+                               capture_output=True).returncode == 0
+        if _has_token and _has_git:
+            print("✅ Persistensi history aktif (GITHUB_TOKEN + git OK)")
+        else:
+            _why = []
+            if not _has_token: _why.append("GITHUB_TOKEN tidak ada")
+            if not _has_git:   _why.append(".git tidak ada di container")
+            print("⚠️ PERSISTENSI HISTORY NONAKTIF: " + "; ".join(_why)
+                  + ". History & notif akan hilang tiap restart Railway.")
+    except Exception as _e:
+        print("⚠️ Cek persistensi history gagal: " + str(_e))
     offset = 0
     while True:
         try:
@@ -1764,7 +1790,7 @@ def run_bot():
                                     f"\u2708\ufe0f {u['away']}\n"
                                     f"Skor: <b>{u['skor']}</b> | "
                                     f"Prediksi: {PRED_L.get(u['pred'], u['pred'])}\n"
-                                    f"{'BENAR \u2705' if u['correct'] else 'SALAH \u274c'}"
+                                    f"{('BENAR '+chr(0x2705)) if u['correct'] else ('SALAH '+chr(0x274c))}"
                                 )
                             lines_msg.append(
                                 f"\n━━━━━━━━━━━━━━━━━━━━━━━\n"
@@ -1840,7 +1866,7 @@ def cmd_today(chat_id, v20, token):
         "Liga_Portugal":"por.1","Super_Lig":"tur.1","Belgium":"bel.1",
         "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
         "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
-        "Denmark":"den.1",
+        "Denmark":"den.1","Ukraine":"ukr.1",
         "UCL":"uefa.champions",
     }
 
@@ -1927,8 +1953,8 @@ def cmd_today(chat_id, v20, token):
                 if is_blacklisted(espn_home, home_model) or is_blacklisted(espn_away, away_model):
                     continue
                 result = predict_match(v20, home_model, away_model, liga)
-                if isinstance(result, dict) and "prediction" in result:
-                    result["odds"] = get_live_odds_for_match(home_model, liga, result.get("prediction"))
+                if isinstance(result, dict) and "pred" in result:
+                    result["odds"] = get_live_odds_for_match(home_model, liga, result["pred"])
                 if result and result["tier"] == "SNIPER":
                     sniper_picks.append({
                         "date": fix_date, "time": fix_time,
@@ -1960,8 +1986,8 @@ def cmd_today(chat_id, v20, token):
                 except:
                     pass
                 result = predict_match(v20, home_model, away_model, liga)
-                if isinstance(result, dict) and "prediction" in result:
-                    result["odds"] = get_live_odds_for_match(home_model, liga, result.get("prediction"))
+                if isinstance(result, dict) and "pred" in result:
+                    result["odds"] = get_live_odds_for_match(home_model, liga, result["pred"])
                 if result and result["tier"] == "SNIPER":
                     sniper_picks.append({
                         "date": fix_date, "time": fix_time,
@@ -2015,7 +2041,7 @@ def cmd_today(chat_id, v20, token):
             if lines:
                 send(chat_id, "\n".join(lines), token)
             current_date = p["date"]
-            lines = [f"\n\U0001f4c5 <b>{current_date}</b>\n{'\u2501'*22}"]
+            lines = [f"\n\U0001f4c5 <b>{current_date}</b>\n{chr(0x2501)*22}"]
 
         lines.append(
             f"\n{emoji} <b>{name}</b>\n"
@@ -2025,7 +2051,8 @@ def cmd_today(chat_id, v20, token):
             + PRED_ICON_LOCAL[r["pred"]] + " <b>" + PRED_LABEL_LOCAL[r["pred"]] + "</b> \u2014 " + f'{r["conf"]*100:.1f}' + "%\n"
             + "  H:" + f'{r["ph"]*100:.1f}' + "% D:" + f'{r["pd"]*100:.1f}' + "% A:" + f'{r["pa"]*100:.1f}' + "%\n"
             + "\u26bd " + str(r["lh"]) + "\u2013" + str(r["la"]) + " | \U0001f3af " + top_sc + "\n"
-            f"{'\u2501'*22}"
+            + (f"💰 Odds: {r['odds']:.2f}\n" if r.get('odds') else "")
+            + f"{chr(0x2501)*22}"
         )
         total += 1
 
@@ -2033,7 +2060,7 @@ def cmd_today(chat_id, v20, token):
         send(chat_id, "\n".join(lines), token)
 
     send(chat_id,
-        f"{'\u2501'*22}\n"
+        f"{chr(0x2501)*22}\n"
         f"\u2705 Total SNIPER: <b>{total} picks</b>\n"
         f"\U0001f4c5 Window: {now_wib.strftime('%d %b %H:%M')} \u2192 "
         f"{end_wib.strftime('%d %b %H:%M')} WIB\n"
@@ -2076,7 +2103,7 @@ def _auto_fetch_results():
         "Liga_Portugal":"por.1","Super_Lig":"tur.1","Belgium":"bel.1",
         "Scotland":"sco.1","Greece":"gre.1","J1_League":"jpn.1",
         "Brazil":"bra.1","Venezuela":"ven.1","Russia":"rus.1",
-        "Denmark":"den.1","UCL":"uefa.champions",
+        "Denmark":"den.1","Ukraine":"ukr.1","UCL":"uefa.champions",
     }
 
     # Grup per liga+tanggal agar fetch minimal
@@ -2194,7 +2221,7 @@ def weekly_report():
         f"🎯 <b>FOOTBALL SNIPER</b> — Weekly Picks\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"📅 {ws.strftime('%d %b')} – {we.strftime('%d %b %Y')}\n"
-        f"🤖 V20.5.2 | 87.4% Backtest Accuracy"
+        f"🤖 V20.5.2 | 81.4% Backtest Accuracy"
     )
     cmd_picks(TELEGRAM_CHAT, v20, TELEGRAM_TOKEN)
 

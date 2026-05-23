@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Football Sniper Bot V20.4.5 — Full Featured"""
+"""Football Sniper Bot V20.4.5 — Full Featured
+
+DEPRECATED — TIDAK DIPAKAI DI PRODUKSI (BUG-008).
+Bot produksi adalah bot.py (V20.5.2) di root repo — itu yang dijalankan Procfile.
+File ini bot versi lama yang ditinggalkan: predict_match-nya lebih sederhana
+(tanpa V3 Extended / UCL / giant killer), dan get_form() menghasilkan string
+form ACAK via np.random.choice — bukan form nyata. Jangan dijalankan; disimpan
+sebagai arsip saja.
+"""
 import json, math, os, requests, time
 import numpy as np
 from scipy.stats import poisson
